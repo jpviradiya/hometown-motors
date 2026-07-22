@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import app from "#/app";
 
-
+// Integration tests for the user registration endpoint.
 describe("POST /api/v1/auth/register", () => {
   it("should register a new user", async () => {
     const response = await request(app).post("/api/v1/auth/register").send({
@@ -16,6 +16,26 @@ describe("POST /api/v1/auth/register", () => {
 
     expect(response.body).toEqual({
       message: "User registered successfully",
+    });
+  });
+
+  it("should return 409 if email already exists", async () => {
+    const payload = {
+      name: "John Doe",
+      email: "john@example.com",
+      password: "Password@123",
+    };
+
+    // register user for the first time
+    await request(app).post("/api/v1/auth/register").send(payload);
+
+    // Attempt to register user with same email again
+    const response = await request(app).post("/api/v1/auth/register").send(payload);
+
+    expect(response.status).toBe(409);
+
+    expect(response.body).toEqual({
+      message: "Email already exists",
     });
   });
 });
