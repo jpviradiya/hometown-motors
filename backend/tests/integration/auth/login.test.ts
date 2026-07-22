@@ -19,6 +19,7 @@ describe("POST /api/v1/auth/login", () => {
 
     expect(response.body).toEqual({
       message: "Login successful",
+      token: expect.any(String),
     });
   });
 

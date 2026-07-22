@@ -18,9 +18,7 @@ describe("AuthService", () => {
     expect(user).not.toBeNull();
     expect(user?.passwordHash).not.toBe("Password@123");
   });
-});
 
-describe("AuthService - Login", () => {
   it("should return a JWT token after successful login", async () => {
     const repository = new AuthRepository();
     const service = new AuthService(repository);

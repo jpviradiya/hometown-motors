@@ -2,6 +2,7 @@ import { ConflictError, UnauthorizedError } from "#/errors";
 import { AuthRepository } from "#/repositories";
 import { LoginUserDto, RegisterUserDto } from "#/validators";
 import bcrypt from "bcrypt";
+import { generateJwtToken } from "#/lib/jwt";
 
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
@@ -14,7 +15,7 @@ export class AuthService {
       throw new ConflictError("Email already exists");
     }
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    
+
     await this.authRepository.create({
       name: data.name,
       email: data.email,
@@ -40,8 +41,15 @@ export class AuthService {
       throw new UnauthorizedError("Invalid email or password");
     }
 
+    const token = generateJwtToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
     return {
       message: "Login successful",
+      token,
     };
   }
 }

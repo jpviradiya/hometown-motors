@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 
 import { authRouter } from "#/routes";
@@ -8,6 +9,6 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/v1/auth", authRouter);
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
 export default app;

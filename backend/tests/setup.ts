@@ -1,4 +1,5 @@
-import { afterEach, beforeEach } from "vitest";
+import "dotenv/config";
+import { afterEach, beforeEach, afterAll } from "vitest";
 import { prisma } from "#/lib/prisma";
 
 beforeEach(async () => {
@@ -7,4 +8,8 @@ beforeEach(async () => {
 
 afterEach(() => {
   // cleanup will go here later
+});
+
+afterAll(async () => {
+  await prisma.$disconnect();
 });
