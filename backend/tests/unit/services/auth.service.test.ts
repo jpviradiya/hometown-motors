@@ -16,6 +16,6 @@ describe("AuthService", () => {
     const user = await repository.findByEmail("john@example.com");
 
     expect(user).not.toBeNull();
-    expect(user?.password).not.toBe("Password@123");
+    expect(user?.passwordHash).not.toBe("Password@123");
   });
 });

@@ -1,18 +1,16 @@
+import { prisma } from "#/lib/prisma";
 type User = {
   name: string;
   email: string;
-  password: string;
+  passwordHash: string;
 };
 
 export class AuthRepository {
-  private readonly users: User[] = [];
-
   async findByEmail(email: string) {
-    return this.users.find((user) => user.email === email) ?? null;
+    return prisma.user.findUnique({ where: { email } });
   }
 
   async create(user: User) {
-    this.users.push(user);
-    return user;
+    return prisma.user.create({ data: user });
   }
 }

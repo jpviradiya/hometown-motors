@@ -11,4 +11,8 @@ export default defineConfig({
       "#": resolve(__dirname, "src"),
     },
   },
+  test: {
+    setupFiles: ["./tests/setup.ts"],
+    fileParallelism: false,
+  },
 });

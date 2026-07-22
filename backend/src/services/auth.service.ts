@@ -14,8 +14,12 @@ export class AuthService {
       throw new ConflictError("Email already exists");
     }
     const hashedPassword = await bcrypt.hash(data.password, 10);
-
-    await this.authRepository.create({ ...data, password: hashedPassword });
+    
+    await this.authRepository.create({
+      name: data.name,
+      email: data.email,
+      passwordHash: hashedPassword,
+    });
 
     return {
       message: "User registered successfully",
@@ -30,7 +34,7 @@ export class AuthService {
       throw new UnauthorizedError("Invalid email or password");
     }
 
-    const isPasswordValid = await bcrypt.compare(data.password, user.password);
+    const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash);
 
     if (!isPasswordValid) {
       throw new UnauthorizedError("Invalid email or password");
