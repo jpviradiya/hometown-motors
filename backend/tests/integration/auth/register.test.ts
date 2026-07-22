@@ -86,4 +86,18 @@ describe("POST /api/v1/auth/register", () => {
       message: "Invalid email address",
     });
   });
+
+  it("should return 400 when password is less than 8 characters", async () => {
+    const response = await request(app).post("/api/v1/auth/register").send({
+      name: "John Doe",
+      email: "john@example.com",
+      password: "Pass1",
+    });
+
+    expect(response.status).toBe(400);
+
+    expect(response.body).toEqual({
+      message: "Password must be at least 8 characters long",
+    });
+  });
 });
