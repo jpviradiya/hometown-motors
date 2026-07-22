@@ -1,3 +1,4 @@
+import { ConflictError, UnauthorizedError } from "#/errors";
 import { AuthRepository } from "#/repositories";
 import { LoginUserDto, RegisterUserDto } from "#/validators";
 import bcrypt from "bcrypt";
@@ -10,7 +11,7 @@ export class AuthService {
     const existingUser = await this.authRepository.findByEmail(data.email);
 
     if (existingUser) {
-      throw new Error("Email already exists");
+      throw new ConflictError("Email already exists");
     }
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
@@ -26,13 +27,13 @@ export class AuthService {
     const user = await this.authRepository.findByEmail(data.email);
 
     if (!user) {
-      throw new Error("Invalid email or password");
+      throw new UnauthorizedError("Invalid email or password");
     }
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("Invalid email or password");
+      throw new UnauthorizedError("Invalid email or password");
     }
 
     return {
