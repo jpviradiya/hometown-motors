@@ -18,4 +18,12 @@ export class VehicleRepository {
       data,
     });
   }
+
+  async findAll() {
+    return prisma.vehicle.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+  }
 }

@@ -15,3 +15,11 @@ export const createVehicle = asyncHandler(async (req: Request, res: Response) =>
     vehicle,
   });
 });
+
+export const getVehicles = asyncHandler(async (_req, res) => {
+  const vehicles = await service.getVehicles();
+
+  res.status(200).json({
+    vehicles,
+  });
+});
