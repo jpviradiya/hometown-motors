@@ -100,4 +100,20 @@ describe("POST /api/v1/auth/register", () => {
       message: "Password must be at least 8 characters long",
     });
   });
+
+  it("should return 400 when password exceeds 128 characters", async () => {
+    const response = await request(app)
+      .post("/api/v1/auth/register")
+      .send({
+        name: "John Doe",
+        email: "john@example.com",
+        password: "A".repeat(129),
+      });
+
+    expect(response.status).toBe(400);
+
+    expect(response.body).toEqual({
+      message: "Password must not exceed 128 characters",
+    });
+  });
 });
