@@ -52,4 +52,20 @@ export class AuthService {
       token,
     };
   }
+
+  // get the current user data with token
+  async getCurrentUser(userId: string) {
+    const user = await this.authRepository.findById(userId);
+
+    if (!user) {
+      throw new UnauthorizedError("Unauthorized");
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+  }
 }

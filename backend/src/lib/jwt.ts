@@ -11,3 +11,11 @@ export function generateJwtToken(payload: { id: string; email: string; role: str
     expiresIn: "1h",
   });
 }
+
+export function verifyJwtToken(token: string) {
+  return jwt.verify(token, JWT_SECRET) as {
+    id: string;
+    email: string;
+    role: string;
+  };
+}

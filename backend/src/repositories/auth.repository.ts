@@ -13,4 +13,10 @@ export class AuthRepository {
   async create(user: User) {
     return prisma.user.create({ data: user });
   }
+
+  async findById(id: string) {
+    return prisma.user.findUnique({
+      where: { id },
+    });
+  }
 }
