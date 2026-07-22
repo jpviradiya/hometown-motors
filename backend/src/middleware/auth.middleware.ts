@@ -1,3 +1,5 @@
+import { UnauthorizedError } from "#/errors";
+import { ForbiddenError } from "#/errors/forbidden.error";
 import { verifyJwtToken } from "#/lib/jwt";
 import { NextFunction, Request, Response } from "express";
 
@@ -5,9 +7,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   const authorization = req.headers.authorization;
 
   if (!authorization?.startsWith("Bearer ")) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError();
   }
 
   const token = authorization.split(" ")[1]!;
@@ -16,9 +16,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     req.user = verifyJwtToken(token);
     next();
   } catch {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError()
   }
 }
 export function authorize(role: "ADMIN" | "USER") {
@@ -30,9 +28,7 @@ export function authorize(role: "ADMIN" | "USER") {
     }
 
     if (req.user.role !== role) {
-      return res.status(403).json({
-        message: "Forbidden",
-      });
+      throw new ForbiddenError();
     }
 
     next();
