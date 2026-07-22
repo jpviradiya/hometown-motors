@@ -32,3 +32,9 @@ export const me = async (req: Request, res: Response) => {
   const user = await authService.getCurrentUser(req.user!.id);
   return res.status(200).json(user);
 };
+
+export const admin = (req: Request, res: Response) => {
+  return res.status(200).json({
+    message: "Access granted",
+  });
+};
