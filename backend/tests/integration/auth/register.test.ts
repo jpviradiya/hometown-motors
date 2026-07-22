@@ -36,4 +36,43 @@ describe("POST /api/v1/auth/register", () => {
       message: "Email already exists",
     });
   });
+
+  it("should return 400 when name is missing", async () => {
+    const response = await request(app).post("/api/v1/auth/register").send({
+      email: "john@example.com",
+      password: "Password@123",
+    });
+
+    expect(response.status).toBe(400);
+
+    expect(response.body).toEqual({
+      message: "Name is required",
+    });
+  });
+
+  it("should return 400 when email is missing", async () => {
+    const response = await request(app).post("/api/v1/auth/register").send({
+      name: "John Doe",
+      password: "Password@123",
+    });
+
+    expect(response.status).toBe(400);
+
+    expect(response.body).toEqual({
+      message: "Email is required",
+    });
+  });
+
+  it("should return 400 when password is missing", async () => {
+    const response = await request(app).post("/api/v1/auth/register").send({
+      name: "John Doe",
+      email: "john@example.com",
+    });
+
+    expect(response.status).toBe(400);
+
+    expect(response.body).toEqual({
+      message: "Password is required",
+    });
+  });
 });
