@@ -1,15 +1,11 @@
 import { AuthRepository } from "#/repositories";
+import { LoginUserDto, RegisterUserDto } from "#/validators";
 import bcrypt from "bcrypt";
-
-type RegisterUserDto = {
-  name: string;
-  email: string;
-  password: string;
-};
 
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
 
+  // user registration services
   async register(data: RegisterUserDto) {
     const existingUser = await this.authRepository.findByEmail(data.email);
 
@@ -22,6 +18,25 @@ export class AuthService {
 
     return {
       message: "User registered successfully",
+    };
+  }
+
+  // user login services
+  async login(data: LoginUserDto) {
+    const user = await this.authRepository.findByEmail(data.email);
+
+    if (!user) {
+      throw new Error("Invalid email or password");
+    }
+
+    const isPasswordValid = await bcrypt.compare(data.password, user.password);
+
+    if (!isPasswordValid) {
+      throw new Error("Invalid email or password");
+    }
+
+    return {
+      message: "Login successful",
     };
   }
 }
