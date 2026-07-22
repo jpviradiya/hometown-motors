@@ -72,4 +72,18 @@ describe("POST /api/v1/auth/register", () => {
       message: "password is required",
     });
   });
+
+  it("should return 400 when email format is invalid", async () => {
+    const response = await request(app).post("/api/v1/auth/register").send({
+      name: "John Doe",
+      email: "johnexample.com",
+      password: "Password@123",
+    });
+
+    expect(response.status).toBe(400);
+
+    expect(response.body).toEqual({
+      message: "Invalid email address",
+    });
+  });
 });
