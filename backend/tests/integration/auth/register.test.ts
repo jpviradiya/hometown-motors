@@ -26,10 +26,8 @@ describe("POST /api/v1/auth/register", () => {
       password: "Password@123",
     };
 
-    // register user for the first time
     await request(app).post("/api/v1/auth/register").send(payload);
 
-    // Attempt to register user with same email again
     const response = await request(app).post("/api/v1/auth/register").send(payload);
 
     expect(response.status).toBe(409);
