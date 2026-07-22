@@ -44,9 +44,8 @@ describe("POST /api/v1/auth/register", () => {
     });
 
     expect(response.status).toBe(400);
-
     expect(response.body).toEqual({
-      message: "Name is required",
+      message: "name is required",
     });
   });
 
@@ -57,9 +56,8 @@ describe("POST /api/v1/auth/register", () => {
     });
 
     expect(response.status).toBe(400);
-
     expect(response.body).toEqual({
-      message: "Email is required",
+      message: "email is required",
     });
   });
 
@@ -70,9 +68,8 @@ describe("POST /api/v1/auth/register", () => {
     });
 
     expect(response.status).toBe(400);
-
     expect(response.body).toEqual({
-      message: "Password is required",
+      message: "password is required",
     });
   });
 });
