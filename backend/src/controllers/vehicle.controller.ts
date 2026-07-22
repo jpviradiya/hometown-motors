@@ -2,12 +2,14 @@ import { Request, Response } from "express";
 
 import { asyncHandler } from "#/lib/async-handler";
 import { VehicleService } from "#/services";
+import { createVehicleSchema } from "#/validators";
 
 const service = new VehicleService();
 
 export const createVehicle = asyncHandler(async (req: Request, res: Response) => {
-  const vehicle = await service.createVehicle(req.body);
+  const validatedData = createVehicleSchema.parse(req.body);
 
+  const vehicle = await service.createVehicle(validatedData);
   res.status(201).json({
     message: "Vehicle created successfully",
     vehicle,
