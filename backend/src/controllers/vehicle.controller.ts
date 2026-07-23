@@ -29,6 +29,7 @@ export const getVehicles = asyncHandler(async (req, res) => {
     }),
     ...(req.query.minPrice ? { minPrice: Number(req.query.minPrice) } : {}),
     ...(req.query.maxPrice ? { maxPrice: Number(req.query.maxPrice) } : {}),
+    ...(typeof req.query.sort === "string" && { sort: req.query.sort }),
   };
 
   const result = await service.getPaginatedVehicles(page, limit, filters);

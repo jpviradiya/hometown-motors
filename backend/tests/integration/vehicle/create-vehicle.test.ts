@@ -51,6 +51,7 @@ describe("POST /api/v1/vehicles", () => {
       prisma.vehicle.deleteMany(),
       prisma.user.deleteMany(),
     ], {
+      maxWait: 30000,
       timeout: 30000,
     });
   });

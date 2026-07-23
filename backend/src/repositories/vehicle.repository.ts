@@ -58,14 +58,23 @@ export class VehicleRepository {
       }),
     };
 
+    let orderBy: any = { createdAt: "asc" };
+    if (filters.sort) {
+      const isDescending = filters.sort.startsWith("-");
+      const fieldName = isDescending ? filters.sort.substring(1) : filters.sort;
+      if (["price", "year", "createdAt"].includes(fieldName)) {
+        orderBy = {
+          [fieldName]: isDescending ? "desc" : "asc",
+        };
+      }
+    }
+
     const [vehicles, total] = await Promise.all([
       prisma.vehicle.findMany({
         where,
         skip,
         take: limit,
-        orderBy: {
-          createdAt: "asc",
-        },
+        orderBy,
       }),
       prisma.vehicle.count({
         where,

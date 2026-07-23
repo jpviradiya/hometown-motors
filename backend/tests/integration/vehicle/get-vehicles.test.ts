@@ -14,6 +14,7 @@ describe("GET /api/v1/vehicles", () => {
         prisma.user.deleteMany(),
       ],
       {
+        maxWait: 30000,
         timeout: 30000,
       }
     );
@@ -286,4 +287,122 @@ describe("GET /api/v1/vehicles", () => {
       message: expect.any(String),
     });
   });
+
+  async function seedSortingVehicles() {
+    await prisma.vehicle.createMany({
+      data: [
+        {
+          make: "Toyota",
+          model: "Corolla",
+          category: "SEDAN",
+          year: 2020,
+          fuelType: "PETROL",
+          color: "White",
+          transmission: "AUTOMATIC",
+          price: 25000,
+          quantity: 10,
+          description: "Reliable sedan",
+          createdAt: new Date("2024-01-01T12:00:00Z"),
+        },
+        {
+          make: "Honda",
+          model: "City",
+          category: "SEDAN",
+          year: 2022,
+          fuelType: "PETROL",
+          color: "Black",
+          transmission: "MANUAL",
+          price: 18000,
+          quantity: 5,
+          description: "Comfortable sedan",
+          createdAt: new Date("2024-01-03T12:00:00Z"),
+        },
+        {
+          make: "Ford",
+          model: "Mustang",
+          category: "COUPE",
+          year: 2018,
+          fuelType: "PETROL",
+          color: "Red",
+          transmission: "AUTOMATIC",
+          price: 45000,
+          quantity: 2,
+          description: "Sporty coupe",
+          createdAt: new Date("2024-01-02T12:00:00Z"),
+        },
+      ],
+    });
+  }
+
+  it("should sort vehicles by price ascending", async () => {
+    await seedSortingVehicles();
+    const response = await request(app).get("/api/v1/vehicles?sort=price");
+
+    expect(response.status).toBe(200);
+
+    const prices = response.body.vehicles.map((v: any) => Number(v.price));
+
+    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+  });
+
+  it("should sort vehicles by price descending", async () => {
+    await seedSortingVehicles();
+    const response = await request(app).get("/api/v1/vehicles?sort=-price");
+
+    expect(response.status).toBe(200);
+
+    const prices = response.body.vehicles.map((v: any) => Number(v.price));
+
+    expect(prices).toEqual([...prices].sort((a, b) => b - a));
+  });
+
+  it("should sort vehicles by year ascending", async () => {
+    await seedSortingVehicles();
+    const response = await request(app).get("/api/v1/vehicles?sort=year");
+
+    expect(response.status).toBe(200);
+
+    const years = response.body.vehicles.map((v: any) => Number(v.year));
+
+    expect(years).toEqual([...years].sort((a, b) => a - b));
+  });
+
+  it("should sort vehicles by year descending", async () => {
+    await seedSortingVehicles();
+    const response = await request(app).get("/api/v1/vehicles?sort=-year");
+
+    expect(response.status).toBe(200);
+
+    const years = response.body.vehicles.map((v: any) => Number(v.year));
+
+    expect(years).toEqual([...years].sort((a, b) => b - a));
+  });
+
+  it("should sort vehicles by createdAt ascending", async () => {
+    await seedSortingVehicles();
+    const response = await request(app).get("/api/v1/vehicles?sort=createdAt");
+
+    expect(response.status).toBe(200);
+
+    const createdAt = response.body.vehicles.map((v: any) =>
+      new Date(v.createdAt).getTime()
+    );
+
+    expect(createdAt).toEqual([...createdAt].sort((a, b) => a - b));
+  });
+
+  it("should sort vehicles by createdAt descending", async () => {
+    await seedSortingVehicles();
+    const response = await request(app).get("/api/v1/vehicles?sort=-createdAt");
+
+    expect(response.status).toBe(200);
+
+    const createdAt = response.body.vehicles.map((v: any) =>
+      new Date(v.createdAt).getTime()
+    );
+
+    expect(createdAt).toEqual([...createdAt].sort((a, b) => b - a));
+  });
+
+  
 });

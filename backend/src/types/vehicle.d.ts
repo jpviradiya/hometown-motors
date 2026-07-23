@@ -18,4 +18,5 @@ type FilterVehicle = {
   transmission?: string;
   minPrice?: number;
   maxPrice?: number;
+  sort?: string;
 };
