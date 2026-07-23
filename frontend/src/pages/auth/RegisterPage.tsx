@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus, Mail, Lock, User, Eye, EyeOff, Car } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-// Validation schema for registration form aligned with backend requirements
 const registerSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
@@ -45,6 +44,8 @@ export const RegisterPage: React.FC = () => {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -85,10 +86,15 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-12">
-      <Card className="w-full max-w-md shadow-lg border">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">Create an Account</CardTitle>
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-muted/30 px-4 py-12">
+      <Card className="w-full max-w-md shadow-xl border border-border/60">
+        <CardHeader className="space-y-2 text-center pb-6">
+          <div className="flex justify-center mb-1">
+            <div className="p-3 rounded-full bg-primary/10 text-primary">
+              <Car className="h-8 w-8" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-black tracking-tight">Create an Account</CardTitle>
           <CardDescription>
             Enter your details below to register for Hometown Motors
           </CardDescription>
@@ -97,89 +103,125 @@ export const RegisterPage: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             {serverError && (
-              <div className="rounded-md bg-destructive/15 p-3 text-sm font-medium text-destructive border border-destructive/20">
+              <div className="rounded-lg bg-destructive/15 p-3 text-sm font-medium text-destructive border border-destructive/20 animate-in fade-in">
                 {serverError}
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  placeholder="John"
-                  disabled={isSubmitting}
-                  {...register("firstName")}
-                />
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="firstName"
+                    placeholder="John"
+                    disabled={isSubmitting}
+                    className="pl-9"
+                    {...register("firstName")}
+                  />
+                </div>
                 {errors.firstName && (
-                  <p className="text-xs font-medium text-destructive">{errors.firstName.message}</p>
+                  <p className="text-xs font-medium text-destructive mt-1">{errors.firstName.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  placeholder="Doe"
-                  disabled={isSubmitting}
-                  {...register("lastName")}
-                />
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="lastName"
+                    placeholder="Doe"
+                    disabled={isSubmitting}
+                    className="pl-9"
+                    {...register("lastName")}
+                  />
+                </div>
                 {errors.lastName && (
-                  <p className="text-xs font-medium text-destructive">{errors.lastName.message}</p>
+                  <p className="text-xs font-medium text-destructive mt-1">{errors.lastName.message}</p>
                 )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                autoComplete="email"
-                disabled={isSubmitting}
-                {...register("email")}
-              />
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email Address</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  autoComplete="email"
+                  disabled={isSubmitting}
+                  className="pl-9"
+                  {...register("email")}
+                />
+              </div>
               {errors.email && (
-                <p className="text-xs font-medium text-destructive">{errors.email.message}</p>
+                <p className="text-xs font-medium text-destructive mt-1">{errors.email.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                autoComplete="new-password"
-                disabled={isSubmitting}
-                {...register("password")}
-              />
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  disabled={isSubmitting}
+                  className="pl-9 pr-10"
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.password && (
-                <p className="text-xs font-medium text-destructive">{errors.password.message}</p>
+                <p className="text-xs font-medium text-destructive mt-1">{errors.password.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                autoComplete="new-password"
-                disabled={isSubmitting}
-                {...register("confirmPassword")}
-              />
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  disabled={isSubmitting}
+                  className="pl-9 pr-10"
+                  {...register("confirmPassword")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.confirmPassword && (
-                <p className="text-xs font-medium text-destructive">
+                <p className="text-xs font-medium text-destructive mt-1">
                   {errors.confirmPassword.message}
                 </p>
               )}
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full cursor-pointer" disabled={isSubmitting}>
+          <CardFooter className="flex flex-col space-y-4 pt-2">
+            <Button type="submit" className="w-full cursor-pointer font-bold h-10" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -195,7 +237,7 @@ export const RegisterPage: React.FC = () => {
 
             <div className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/login" className="font-medium text-primary hover:underline">
+              <Link to="/login" className="font-semibold text-primary hover:underline">
                 Sign In
               </Link>
             </div>

@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Car, Package, DollarSign, AlertTriangle, Plus, ArrowRight } from "lucide-react";
+import {
+  Car,
+  Package,
+  DollarSign,
+  AlertTriangle,
+  Plus,
+  ArrowRight,
+  TrendingUp,
+  PieChart,
+  ShoppingBag,
+  PackagePlus,
+} from "lucide-react";
 import type { Vehicle } from "@/types/vehicle";
 import { getVehicles, deleteVehicle } from "@/api/vehicle.api";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -60,6 +71,15 @@ export const DashboardPage: React.FC = () => {
 
   const lowStockCount = vehicles.filter((v) => v.quantity <= 3).length;
 
+  // Category Breakdown Calculation for visual chart
+  const categoryCounts: Record<string, number> = {};
+  vehicles.forEach((v) => {
+    categoryCounts[v.category] = (categoryCounts[v.category] || 0) + v.quantity;
+  });
+
+  const categoryEntries = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]);
+  const maxCategoryUnits = Math.max(...Object.values(categoryCounts), 1);
+
   const handleDeleteConfirm = async () => {
     if (!deleteItem) return;
     setIsDeleting(true);
@@ -81,11 +101,11 @@ export const DashboardPage: React.FC = () => {
     <div className="space-y-8">
       {/* Page Header */}
       <PageHeader
-        title="Admin Dashboard"
-        description="Overview of Hometown Motors inventory statistics, stock alerts, and quick actions."
+        title="Admin Overview & Analytics"
+        description="Real-time inventory statistics, category breakdown, stock alerts, and quick actions."
         action={
           <Link to="/admin/vehicles/new">
-            <Button size="lg" className="cursor-pointer font-bold">
+            <Button size="lg" className="cursor-pointer font-bold shadow-xs">
               <Plus className="mr-2 h-5 w-5" />
               Add New Vehicle
             </Button>
@@ -142,6 +162,97 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
 
+          {/* Analytics & Quick Actions Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Category Stock Visualization */}
+            <div className="lg:col-span-2 rounded-xl border bg-card p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b pb-3">
+                <div className="flex items-center gap-2">
+                  <PieChart className="h-5 w-5 text-primary" />
+                  <h3 className="font-bold text-base">Category Inventory Breakdown</h3>
+                </div>
+                <span className="text-xs text-muted-foreground font-semibold">
+                  {totalPhysicalUnits} Total Units
+                </span>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                {categoryEntries.slice(0, 5).map(([cat, count]) => {
+                  const percentage = Math.round((count / maxCategoryUnits) * 100);
+                  return (
+                    <div key={cat} className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span className="text-foreground">{cat}</span>
+                        <span className="text-muted-foreground">{count} units ({percentage}%)</span>
+                      </div>
+                      <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full bg-primary transition-all duration-500 rounded-full"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Action Cards */}
+            <div className="rounded-xl border bg-card p-6 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 border-b pb-3">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <h3 className="font-bold text-base">Quick Actions</h3>
+              </div>
+
+              <div className="space-y-3">
+                <Link to="/admin/vehicles/new" className="block">
+                  <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-muted transition-colors cursor-pointer group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-md bg-primary/10 text-primary">
+                        <Plus className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-foreground">Add New Vehicle</div>
+                        <div className="text-[11px] text-muted-foreground">List model to catalog</div>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                <Link to="/admin/vehicles" className="block">
+                  <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-muted transition-colors cursor-pointer group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-md bg-emerald-500/10 text-emerald-600">
+                        <PackagePlus className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-foreground">Restock Inventory</div>
+                        <div className="text-[11px] text-muted-foreground">Add stock count</div>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                <Link to="/vehicles" className="block">
+                  <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-muted transition-colors cursor-pointer group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-md bg-accent text-accent-foreground">
+                        <ShoppingBag className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-foreground">Customer Storefront</div>
+                        <div className="text-[11px] text-muted-foreground">View public page</div>
+                      </div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           {/* Quick Management Table */}
           <div className="space-y-4 pt-4">
             <div className="flex items-center justify-between border-b pb-3">
@@ -151,7 +262,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <Link to="/admin/vehicles">
-                <Button variant="outline" size="sm" className="cursor-pointer">
+                <Button variant="outline" size="sm" className="cursor-pointer font-semibold">
                   View Full Inventory
                   <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Button>
