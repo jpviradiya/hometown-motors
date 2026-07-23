@@ -20,6 +20,12 @@ describe("GET /api/v1/vehicles", () => {
     expect(response.status).toBe(200);
 
     expect(response.body).toEqual({
+      pagination: {
+        limit: 10,
+        page: 1,
+        total: 0,
+        totalPages: 0,
+      },
       vehicles: [],
     });
   });
@@ -99,5 +105,84 @@ describe("GET /api/v1/vehicles", () => {
     });
 
     expect(response.body.vehicles[0].make).toBe("Toyota-6");
+  });
+
+  it("should return vehicles matching the search term", async () => {
+    await prisma.vehicle.createMany({
+      data: [
+        {
+          make: "Toyota",
+          model: "Corolla",
+          category: "SEDAN",
+          year: 2024,
+          fuelType: "PETROL",
+          color: "White",
+          transmission: "AUTOMATIC",
+          price: 25000,
+          quantity: 5,
+          description: "Toyota Corolla",
+        },
+        {
+          make: "Honda",
+          model: "City",
+          category: "SEDAN",
+          year: 2024,
+          fuelType: "PETROL",
+          color: "Black",
+          transmission: "MANUAL",
+          price: 22000,
+          quantity: 8,
+          description: "Honda City",
+        },
+        {
+          make: "Toyota",
+          model: "Fortuner",
+          category: "SUV",
+          year: 2024,
+          fuelType: "DIESEL",
+          color: "Grey",
+          transmission: "AUTOMATIC",
+          price: 55000,
+          quantity: 2,
+          description: "Toyota Fortuner",
+        },
+      ],
+    });
+
+    const response = await request(app).get("/api/v1/vehicles?search=toyota");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles).toHaveLength(2);
+
+    expect(response.body.vehicles[0].make).toBe("Toyota");
+    expect(response.body.vehicles[1].make).toBe("Toyota");
+
+    expect(response.body.pagination.total).toBe(2);
+  });
+
+  it("should return an empty array when no vehicles match the search term", async () => {
+    await prisma.vehicle.create({
+      data: {
+        make: "Toyota",
+        model: "Corolla",
+        category: "SEDAN",
+        year: 2024,
+        fuelType: "PETROL",
+        color: "White",
+        transmission: "AUTOMATIC",
+        price: 25000,
+        quantity: 5,
+        description: "Toyota Corolla",
+      },
+    });
+
+    const response = await request(app).get("/api/v1/vehicles?search=bmw");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles).toEqual([]);
+
+    expect(response.body.pagination.total).toBe(0);
   });
 });

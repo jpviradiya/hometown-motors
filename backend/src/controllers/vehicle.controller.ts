@@ -17,13 +17,11 @@ export const createVehicle = asyncHandler(async (req: Request, res: Response) =>
 });
 
 export const getVehicles = asyncHandler(async (req, res) => {
-  if (req.query.page || req.query.limit) {
-    const page = Number(req.query.page ?? 1);
-    const limit = Number(req.query.limit ?? 10);
-    const result = await service.getPaginatedVehicles(page, limit);
-    return res.status(200).json(result);
-  }
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 10);
+  const search = typeof req.query.search === "string" ? req.query.search : undefined;
 
-  const vehicles = await service.getVehicles();
-  return res.status(200).json({ vehicles });
+  const result = await service.getPaginatedVehicles(page, limit, search);
+
+  res.status(200).json(result);
 });
