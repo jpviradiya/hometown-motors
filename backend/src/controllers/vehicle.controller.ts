@@ -4,6 +4,7 @@ import { asyncHandler } from "#/lib/async-handler";
 import { VehicleService } from "#/services";
 import { createVehicleSchema, updateVehicleSchema } from "#/validators";
 import { NotFoundError } from "#/errors";
+import { purchaseSchema } from "#/validators/purchase.validator";
 
 const service = new VehicleService();
 
@@ -60,7 +61,7 @@ export const updateVehicle = asyncHandler(async (req, res) => {
   if (!id || Array.isArray(id)) {
     throw new NotFoundError("Vehicle not found");
   }
-  
+
   const data = updateVehicleSchema.parse(req.body);
   const vehicle = await service.updateVehicle(id, data as any);
 
@@ -91,7 +92,7 @@ export const purchaseVehicle = asyncHandler(async (req, res) => {
     throw new NotFoundError("Vehicle not found");
   }
 
-  const { quantity } = req.body;
+  const { quantity } = purchaseSchema.parse(req.body);
 
   await service.purchaseVehicle(id, req.user!.id, quantity);
 

@@ -66,13 +66,15 @@ export class VehicleService {
       throw new NotFoundError("Vehicle not found");
     }
 
-    await this.repository.createPurchase({
+    if (quantity > vehicle.quantity) {
+      throw new ConflictError("Insufficient stock");
+    }
+
+    await this.repository.purchaseVehicle({
       userId,
-      vehicleId,
+      vehicleId: vehicle.id,
       quantity,
       purchasePrice: Number(vehicle.price),
     });
-
-    await this.repository.decreaseStock(vehicleId, quantity);
   }
 }

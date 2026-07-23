@@ -1,4 +1,5 @@
 import { prisma } from "#/lib/prisma";
+import { CreatePurchaseDto } from "#/types/purchase.types";
 import { UpdateVehicleDto } from "#/types/vehicle.types";
 
 export class VehicleRepository {
@@ -155,6 +156,30 @@ export class VehicleRepository {
           decrement: quantity,
         },
       },
+    });
+  }
+
+  async purchaseVehicle(data: CreatePurchaseDto) {
+    return prisma.$transaction(async (tx) => {
+      await tx.purchase.create({
+        data: {
+          userId: data.userId,
+          vehicleId: data.vehicleId,
+          quantity: data.quantity,
+          purchasePrice: data.purchasePrice,
+        },
+      });
+
+      await tx.vehicle.update({
+        where: {
+          id: data.vehicleId,
+        },
+        data: {
+          quantity: {
+            decrement: data.quantity,
+          },
+        },
+      });
     });
   }
 }
