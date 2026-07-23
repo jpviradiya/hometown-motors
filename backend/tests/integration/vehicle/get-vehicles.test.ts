@@ -6,10 +6,12 @@ import { prisma } from "#/lib/prisma";
 
 describe("GET /api/v1/vehicles", () => {
   beforeEach(async () => {
-    await prisma.purchase.deleteMany();
-    await prisma.vehicleImage.deleteMany();
-    await prisma.vehicle.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.$transaction([
+      prisma.purchase.deleteMany(),
+      prisma.vehicleImage.deleteMany(),
+      prisma.vehicle.deleteMany(),
+      prisma.user.deleteMany(),
+    ]);
   });
 
   it("should return an empty array when no vehicles exist", async () => {
@@ -65,5 +67,37 @@ describe("GET /api/v1/vehicles", () => {
     expect(response.body.vehicles[1]).toMatchObject({
       make: "Honda",
     });
+  });
+
+  it("should return paginated vehicles", async () => {
+    await prisma.vehicle.createMany({
+      data: Array.from({ length: 15 }, (_, index) => ({
+        make: `Toyota-${index + 1}`,
+        model: `Model-${index + 1}`,
+        category: "SEDAN",
+        year: 2024,
+        fuelType: "PETROL",
+        color: "White",
+        transmission: "AUTOMATIC",
+        price: 20000 + index,
+        quantity: 5,
+        description: "Vehicle",
+      })),
+    });
+
+    const response = await request(app).get("/api/v1/vehicles?page=2&limit=5");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles).toHaveLength(5);
+
+    expect(response.body.pagination).toEqual({
+      page: 2,
+      limit: 5,
+      total: 15,
+      totalPages: 3,
+    });
+
+    expect(response.body.vehicles[0].make).toBe("Toyota-6");
   });
 });

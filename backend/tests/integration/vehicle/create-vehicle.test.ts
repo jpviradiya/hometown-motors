@@ -45,10 +45,12 @@ async function createVehicleRequest(overrides: Partial<typeof defaultVehicle> = 
 
 describe("POST /api/v1/vehicles", () => {
   beforeEach(async () => {
-    await prisma.purchase.deleteMany();
-    await prisma.vehicleImage.deleteMany();
-    await prisma.vehicle.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.$transaction([
+      prisma.purchase.deleteMany(),
+      prisma.vehicleImage.deleteMany(),
+      prisma.vehicle.deleteMany(),
+      prisma.user.deleteMany(),
+    ]);
   });
 
   it("should create a vehicle when requested by an admin", async () => {
