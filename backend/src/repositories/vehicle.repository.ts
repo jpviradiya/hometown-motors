@@ -77,4 +77,12 @@ export class VehicleRepository {
       total,
     };
   }
+
+  async findById(id: string) {
+    return prisma.vehicle.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
 }

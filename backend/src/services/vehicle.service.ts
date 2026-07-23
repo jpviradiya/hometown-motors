@@ -24,4 +24,8 @@ export class VehicleService {
       },
     };
   }
+
+  async getVehicleById(id: string) {
+    return this.repository.findById(id);
+  }
 }
