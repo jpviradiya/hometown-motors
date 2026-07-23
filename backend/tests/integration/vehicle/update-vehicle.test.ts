@@ -106,4 +106,49 @@ describe("PATCH /api/v1/vehicles/:id", () => {
       message: "Vehicle not found",
     });
   });
+
+  it("should return 403 when a non-admin updates a vehicle", async () => {
+    const user = await prisma.user.create({
+      data: {
+        name: "User",
+        email: "user@test.com",
+        passwordHash: "hashed-password",
+        role: "USER",
+      },
+    });
+
+    const token = generateJwtToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    const vehicle = await prisma.vehicle.create({
+      data: {
+        make: "Toyota",
+        model: "Corolla",
+        category: "SEDAN",
+        year: 2024,
+        fuelType: "PETROL",
+        color: "White",
+        transmission: "AUTOMATIC",
+        price: 25000,
+        quantity: 10,
+        description: "Test vehicle",
+      },
+    });
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        price: 30000,
+      });
+
+    expect(response.status).toBe(403);
+
+    expect(response.body).toMatchObject({
+      message: "Forbidden",
+    });
+  });
 });
