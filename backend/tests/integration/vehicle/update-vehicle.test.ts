@@ -7,10 +7,15 @@ import { generateJwtToken } from "#/lib/jwt";
 
 describe("PATCH /api/v1/vehicles/:id", () => {
   beforeEach(async () => {
-    await prisma.purchase.deleteMany();
-    await prisma.vehicleImage.deleteMany();
-    await prisma.vehicle.deleteMany();
-    await prisma.user.deleteMany();
+    await prisma.$transaction([
+      prisma.purchase.deleteMany(),
+      prisma.vehicleImage.deleteMany(),
+      prisma.vehicle.deleteMany(),
+      prisma.user.deleteMany(),
+    ], {
+      maxWait: 30000,
+      timeout: 30000,
+    });
   });
 
   it("should update a vehicle", async () => {
@@ -56,7 +61,7 @@ describe("PATCH /api/v1/vehicles/:id", () => {
     expect(response.status).toBe(200);
 
     expect(response.body.vehicle).toMatchObject({
-      price: 30000,
+      price: "30000",
       quantity: 20,
       description: "Updated description",
     });
@@ -67,8 +72,38 @@ describe("PATCH /api/v1/vehicles/:id", () => {
       },
     });
 
-    expect(updatedVehicle?.price).toBe(30000);
+    expect(Number(updatedVehicle?.price)).toBe(30000);
     expect(updatedVehicle?.quantity).toBe(20);
     expect(updatedVehicle?.description).toBe("Updated description");
+  });
+
+  it("should return 404 when updating a non-existent vehicle", async () => {
+    const admin = await prisma.user.create({
+      data: {
+        name: "Admin",
+        email: "admin@test.com",
+        passwordHash: "hashed-password",
+        role: "ADMIN",
+      },
+    });
+
+    const token = generateJwtToken({
+      id: admin.id,
+      email: admin.email,
+      role: admin.role,
+    });
+
+    const response = await request(app)
+      .patch("/api/v1/vehicles/non-existent-id")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        price: 30000,
+      });
+
+    expect(response.status).toBe(404);
+
+    expect(response.body).toMatchObject({
+      message: "Vehicle not found",
+    });
   });
 });
