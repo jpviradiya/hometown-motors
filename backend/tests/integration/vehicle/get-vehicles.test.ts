@@ -5,20 +5,7 @@ import app from "#/app";
 import { prisma } from "#/lib/prisma";
 
 describe("GET /api/v1/vehicles", () => {
-  beforeEach(async () => {
-    await prisma.$transaction(
-      [
-        prisma.purchase.deleteMany(),
-        prisma.vehicleImage.deleteMany(),
-        prisma.vehicle.deleteMany(),
-        prisma.user.deleteMany(),
-      ],
-      {
-        maxWait: 30000,
-        timeout: 30000,
-      }
-    );
-  });
+  // Redundant beforeEach database cleanup removed in favor of global setup.ts cleanup
 
   it("should return an empty array when no vehicles exist", async () => {
     const response = await request(app).get("/api/v1/vehicles");

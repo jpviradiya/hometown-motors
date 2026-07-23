@@ -47,20 +47,7 @@ async function createVehicle() {
 }
 
 describe("PATCH /api/v1/vehicles/:id", () => {
-  beforeEach(async () => {
-    await prisma.$transaction(
-      [
-        prisma.purchase.deleteMany(),
-        prisma.vehicleImage.deleteMany(),
-        prisma.vehicle.deleteMany(),
-        prisma.user.deleteMany(),
-      ],
-      {
-        maxWait: 30000,
-        timeout: 30000,
-      }
-    );
-  });
+  // Redundant beforeEach database cleanup removed in favor of global setup.ts cleanup
 
   it("should update a vehicle", async () => {
     const { token } = await createUser("ADMIN");

@@ -1,4 +1,4 @@
-import { NotFoundError } from "#/errors";
+import { ConflictError, NotFoundError } from "#/errors";
 import { VehicleRepository } from "#/repositories";
 import { UpdateVehicleDto } from "#/types/vehicle.types";
 
@@ -46,6 +46,14 @@ export class VehicleService {
 
     if (!exists) {
       throw new NotFoundError("Vehicle not found");
+    }
+
+    const hasPurchases = await this.repository.hasPurchases(id);
+
+    if (hasPurchases) {
+      throw new ConflictError(
+        "Vehicle cannot be deleted because it has purchase history"
+      );
     }
 
     await this.repository.delete(id);

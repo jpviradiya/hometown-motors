@@ -44,17 +44,7 @@ async function createVehicleRequest(overrides: Partial<typeof defaultVehicle> = 
 }
 
 describe("POST /api/v1/vehicles", () => {
-  beforeEach(async () => {
-    await prisma.$transaction([
-      prisma.purchase.deleteMany(),
-      prisma.vehicleImage.deleteMany(),
-      prisma.vehicle.deleteMany(),
-      prisma.user.deleteMany(),
-    ], {
-      maxWait: 30000,
-      timeout: 30000,
-    });
-  });
+  // Redundant beforeEach database cleanup removed in favor of global setup.ts cleanup
 
   it("should create a vehicle when requested by an admin", async () => {
     const response = await createVehicleRequest();

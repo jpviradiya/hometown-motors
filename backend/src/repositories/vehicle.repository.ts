@@ -123,4 +123,14 @@ export class VehicleRepository {
       },
     });
   }
+
+  async hasPurchases(id: string) {
+    const count = await prisma.purchase.count({
+      where: {
+        vehicleId: id,
+      },
+    });
+
+    return count > 0;
+  }
 }
