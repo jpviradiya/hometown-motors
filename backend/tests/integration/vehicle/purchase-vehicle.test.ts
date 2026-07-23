@@ -96,4 +96,55 @@ describe("POST /api/v1/vehicles/:id/purchase", () => {
 
     expect(updatedVehicle?.quantity).toBe(8);
   });
+
+  it("should return 404 when vehicle does not exist", async () => {
+    const { token } = await createUser("USER");
+
+    const response = await request(app)
+      .post("/api/v1/vehicles/non-existent-id/purchase")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        quantity: 1,
+      });
+
+    expect(response.status).toBe(404);
+
+    expect(response.body).toMatchObject({
+      message: "Vehicle not found",
+    });
+  });
+
+  it("should return 400 when quantity is less than or equal to zero", async () => {
+    const { token } = await createUser("USER");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .post(`/api/v1/vehicles/${vehicle.id}/purchase`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        quantity: 0,
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 409 when requested quantity exceeds available stock", async () => {
+    const { token } = await createUser("USER");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .post(`/api/v1/vehicles/${vehicle.id}/purchase`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        quantity: 100,
+      });
+
+    expect(response.status).toBe(409);
+
+    expect(response.body).toMatchObject({
+      message: "Insufficient stock",
+    });
+  });
 });
