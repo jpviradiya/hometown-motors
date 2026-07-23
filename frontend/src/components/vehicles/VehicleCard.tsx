@@ -39,10 +39,10 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
           {/* Top Gradient Overlay for Badge Contrast */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-transparent pointer-events-none" />
 
-          {/* Category Pill Tag Overlay */}
+          {/* Category Pill Tag Overlay with Pure White Car Icon */}
           <div className="absolute top-3 left-3 flex gap-2 z-10">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 text-white px-2.5 py-1 text-[11px] font-bold border border-white/20 backdrop-blur-md shadow-md">
-              <CarIcon className="h-3.5 w-3.5 text-primary" />
+              <CarIcon className="h-3.5 w-3.5 text-white" />
               <span>{vehicle.category}</span>
             </span>
           </div>
@@ -51,17 +51,17 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle }) => {
           <div className="absolute top-3 right-3 z-10">
             {isOutOfStock ? (
               <Badge variant="destructive" className="shadow-md font-bold flex items-center gap-1 px-2.5 py-1">
-                <XCircle className="h-3.5 w-3.5" />
+                <XCircle className="h-3.5 w-3.5 text-white" />
                 <span>Out of Stock</span>
               </Badge>
             ) : isLowStock ? (
               <Badge variant="warning" className="shadow-md font-bold flex items-center gap-1 px-2.5 py-1">
-                <AlertTriangle className="h-3.5 w-3.5" />
+                <AlertTriangle className="h-3.5 w-3.5 text-slate-950" />
                 <span>Only {vehicle.quantity} Left</span>
               </Badge>
             ) : (
               <Badge variant="success" className="shadow-md font-bold flex items-center gap-1 px-2.5 py-1">
-                <CheckCircle2 className="h-3.5 w-3.5" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-white" />
                 <span>In Stock ({vehicle.quantity})</span>
               </Badge>
             )}

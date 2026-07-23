@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  Car,
-  LogIn,
-  UserPlus,
-  LogOut,
-  User as UserIcon,
-  LayoutDashboard,
-  Menu,
-  X,
-  Home,
-  ShoppingBag,
-} from "lucide-react";
+import { Car, LogIn, UserPlus, LogOut, User as UserIcon, LayoutDashboard, Menu, X, Home, ShoppingBag, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +12,7 @@ export const Navbar: React.FC = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
   const isAdmin = user?.role?.toLowerCase() === "admin";
 
   const handleLogout = () => {
@@ -36,14 +26,34 @@ export const Navbar: React.FC = () => {
     return location.pathname.startsWith(path);
   };
 
+  // Render simplified Authentication Header on login/register pages
+  if (isAuthPage) {
+    return (
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/80 shadow-xs">
+        <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+          <Link to="/" className="flex items-center gap-2.5 font-black text-xl tracking-tight text-primary transition-transform hover:scale-102">
+            <div className="p-2 rounded-xl bg-primary text-primary-foreground shadow-xs">
+              <Car className="h-5 w-5" />
+            </div>
+            <span className="tracking-tight">Hometown Motors</span>
+          </Link>
+
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="cursor-pointer font-semibold text-xs sm:text-sm">
+              <ArrowLeft className="mr-1.5 h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/80 shadow-xs">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Brand Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2.5 font-black text-xl tracking-tight text-primary transition-transform hover:scale-102"
-        >
+        <Link to="/" className="flex items-center gap-2.5 font-black text-xl tracking-tight text-primary transition-transform hover:scale-102">
           <div className="p-2 rounded-xl bg-primary text-primary-foreground shadow-xs">
             <Car className="h-5 w-5" />
           </div>
@@ -72,7 +82,7 @@ export const Navbar: React.FC = () => {
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
-            Inventory
+            Browse Inventory
           </Link>
           {isAdmin && (
             <Link
@@ -98,10 +108,7 @@ export const Navbar: React.FC = () => {
                 <UserIcon className="h-3.5 w-3.5 text-primary" />
                 <span>{user.firstName || user.name || user.email}</span>
                 {isAdmin && (
-                  <Badge
-                    variant="default"
-                    className="px-1.5 py-0 text-[10px] uppercase font-bold"
-                  >
+                  <Badge variant="default" className="px-1.5 py-0 text-[10px] uppercase font-bold">
                     Admin
                   </Badge>
                 )}
@@ -119,20 +126,13 @@ export const Navbar: React.FC = () => {
           ) : (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="cursor-pointer font-medium min-h-[36px]"
-                >
+                <Button variant="ghost" size="sm" className="cursor-pointer font-medium min-h-[36px]">
                   <LogIn className="mr-1.5 h-4 w-4" />
                   Log In
                 </Button>
               </Link>
               <Link to="/register">
-                <Button
-                  size="sm"
-                  className="cursor-pointer font-bold shadow-xs min-h-[36px]"
-                >
+                <Button size="sm" className="cursor-pointer font-bold shadow-xs min-h-[36px]">
                   <UserPlus className="mr-1.5 h-4 w-4" />
                   Register
                 </Button>
@@ -228,10 +228,7 @@ export const Navbar: React.FC = () => {
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button
-                    variant="outline"
-                    className="w-full cursor-pointer min-h-[44px] font-semibold"
-                  >
+                  <Button variant="outline" className="w-full cursor-pointer min-h-[44px] font-semibold">
                     <LogIn className="mr-1.5 h-4 w-4" />
                     Log In
                   </Button>
