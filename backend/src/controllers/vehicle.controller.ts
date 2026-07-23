@@ -83,3 +83,19 @@ export const deleteVehicle = asyncHandler(async (req, res) => {
     message: "Vehicle deleted successfully",
   });
 });
+
+export const purchaseVehicle = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || Array.isArray(id)) {
+    throw new NotFoundError("Vehicle not found");
+  }
+
+  const { quantity } = req.body;
+
+  await service.purchaseVehicle(id, req.user!.id, quantity);
+
+  res.status(201).json({
+    message: "Vehicle purchased successfully",
+  });
+});

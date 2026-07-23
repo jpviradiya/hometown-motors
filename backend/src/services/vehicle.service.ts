@@ -58,4 +58,21 @@ export class VehicleService {
 
     await this.repository.delete(id);
   }
+
+  async purchaseVehicle(vehicleId: string, userId: string, quantity: number) {
+    const vehicle = await this.repository.findById(vehicleId);
+
+    if (!vehicle) {
+      throw new NotFoundError("Vehicle not found");
+    }
+
+    await this.repository.createPurchase({
+      userId,
+      vehicleId,
+      quantity,
+      purchasePrice: Number(vehicle.price),
+    });
+
+    await this.repository.decreaseStock(vehicleId, quantity);
+  }
 }

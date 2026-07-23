@@ -133,4 +133,28 @@ export class VehicleRepository {
 
     return count > 0;
   }
+
+  async createPurchase(data: {
+    userId: string;
+    vehicleId: string;
+    quantity: number;
+    purchasePrice: number;
+  }) {
+    return prisma.purchase.create({
+      data,
+    });
+  }
+
+  async decreaseStock(id: string, quantity: number) {
+    return prisma.vehicle.update({
+      where: {
+        id,
+      },
+      data: {
+        quantity: {
+          decrement: quantity,
+        },
+      },
+    });
+  }
 }
