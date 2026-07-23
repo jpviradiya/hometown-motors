@@ -21,9 +21,31 @@ export class VehicleRepository {
 
   async findAll() {
     return prisma.vehicle.findMany({
-      orderBy: {
-        createdAt: "asc",
-      },
+      orderBy: [
+        { createdAt: "asc" },
+        { id: "asc" },
+      ],
     });
+  }
+
+  async findPaginated(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const [vehicles, total] = await Promise.all([
+      prisma.vehicle.findMany({
+        skip,
+        take: limit,
+        orderBy: [
+          { createdAt: "asc" },
+          { id: "asc" },
+        ],
+      }),
+      prisma.vehicle.count(),
+    ]);
+
+    return {
+      vehicles,
+      total,
+    };
   }
 }

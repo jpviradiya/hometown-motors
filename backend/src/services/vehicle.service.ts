@@ -10,4 +10,18 @@ export class VehicleService {
   async getVehicles() {
     return this.repository.findAll();
   }
+
+  async getPaginatedVehicles(page: number, limit: number) {
+    const { vehicles, total } = await this.repository.findPaginated(page, limit);
+
+    return {
+      vehicles,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
 }
