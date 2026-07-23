@@ -96,4 +96,46 @@ describe("DELETE /api/v1/vehicles/:id", () => {
       message: "Vehicle not found",
     });
   });
+
+  it("should return 403 when a non-admin deletes a vehicle", async () => {
+    const { token } = await createUser("USER");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .delete(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+
+    expect(response.body).toMatchObject({
+      message: "Forbidden",
+    });
+  });
+
+  it("should return 409 when deleting a vehicle with purchase history", async () => {
+    const { user } = await createUser("USER");
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    await prisma.purchase.create({
+      data: {
+        userId: user.id,
+        vehicleId: vehicle.id,
+        quantity: 1,
+        purchasePrice: 25000,
+      },
+    });
+
+    const response = await request(app)
+      .delete(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(409);
+
+    expect(response.body).toMatchObject({
+      message: "Vehicle cannot be deleted because it has purchase history",
+    });
+  });
 });
