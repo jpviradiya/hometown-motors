@@ -220,4 +220,43 @@ describe("PATCH /api/v1/vehicles/:id", () => {
 
     expect(response.status).toBe(400);
   });
+
+  it("should update only the provided fields", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        price: 35000,
+      });
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicle).toMatchObject({
+      make: "Toyota",
+      model: "Corolla",
+      year: 2024,
+      quantity: 10,
+      description: "Test vehicle",
+      price: "35000",
+    });
+
+    const updatedVehicle = await prisma.vehicle.findUnique({
+      where: {
+        id: vehicle.id,
+      },
+    });
+
+    expect(updatedVehicle).not.toBeNull();
+
+    expect(updatedVehicle!.make).toBe("Toyota");
+    expect(updatedVehicle!.model).toBe("Corolla");
+    expect(updatedVehicle!.year).toBe(2024);
+    expect(updatedVehicle!.quantity).toBe(10);
+    expect(updatedVehicle!.description).toBe("Test vehicle");
+    expect(Number(updatedVehicle!.price)).toBe(35000);
+  });
 });
