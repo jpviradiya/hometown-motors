@@ -33,6 +33,8 @@ export const createVehicleSchema = z.object({
   quantity: z.number().int().min(0, "Quantity cannot be negative"),
 
   description: z.string().trim().min(1, "Description is required"),
+
+  imageUrl: z.string().trim().min(1, "Image URL is required"),
 });
 
 export const updateVehicleSchema = z.object({
@@ -51,4 +53,5 @@ export const updateVehicleSchema = z.object({
   price: z.number().positive().optional(),
   quantity: z.number().int().min(0).optional(),
   description: z.string().trim().min(1).optional(),
+  imageUrl: z.string().trim().min(1).optional(),
 });

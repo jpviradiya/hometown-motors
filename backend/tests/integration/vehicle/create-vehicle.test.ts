@@ -16,6 +16,7 @@ const defaultVehicle = {
   price: 25000,
   quantity: 10,
   description: "Reliable family sedan",
+  imageUrl: "https://example.com/car.jpg",
 };
 
 async function createVehicleRequest(overrides: Partial<typeof defaultVehicle> = {}) {
@@ -180,6 +181,14 @@ describe("POST /api/v1/vehicles", () => {
   it("should return 400 when description is missing", async () => {
     const response = await createVehicleRequest({
       description: undefined as any,
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 400 when imageUrl is missing", async () => {
+    const response = await createVehicleRequest({
+      imageUrl: undefined as any,
     });
 
     expect(response.status).toBe(400);

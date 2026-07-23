@@ -9,6 +9,7 @@ type Vehicle = {
   price: number;
   quantity: number;
   description: string;
+  imageUrl: string;
 };
 
 type FilterVehicle = {

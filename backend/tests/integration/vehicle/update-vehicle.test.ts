@@ -42,6 +42,7 @@ async function createVehicle() {
       price: 25000,
       quantity: 10,
       description: "Test vehicle",
+      imageUrl: "https://example.com/car.jpg",
     },
   });
 }

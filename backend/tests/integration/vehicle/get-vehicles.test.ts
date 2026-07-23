@@ -37,6 +37,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 25000,
           quantity: 10,
           description: "Reliable sedan",
+          imageUrl: "https://example.com/car.jpg",
         },
         {
           make: "Honda",
@@ -49,6 +50,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 22000,
           quantity: 5,
           description: "Comfortable sedan",
+          imageUrl: "https://example.com/car.jpg",
         },
       ],
     });
@@ -81,6 +83,7 @@ describe("GET /api/v1/vehicles", () => {
         price: 20000 + index,
         quantity: 5,
         description: "Vehicle",
+        imageUrl: "https://example.com/car.jpg",
       })),
     });
 
@@ -114,6 +117,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 25000,
           quantity: 5,
           description: "Toyota Corolla",
+          imageUrl: "https://example.com/car.jpg",
         },
         {
           make: "Honda",
@@ -126,6 +130,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 22000,
           quantity: 8,
           description: "Honda City",
+          imageUrl: "https://example.com/car.jpg",
         },
         {
           make: "Toyota",
@@ -138,6 +143,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 55000,
           quantity: 2,
           description: "Toyota Fortuner",
+          imageUrl: "https://example.com/car.jpg",
         },
       ],
     });
@@ -167,6 +173,7 @@ describe("GET /api/v1/vehicles", () => {
         price: 25000,
         quantity: 5,
         description: "Toyota Corolla",
+        imageUrl: "https://example.com/car.jpg",
       },
     });
 
@@ -251,6 +258,7 @@ describe("GET /api/v1/vehicles", () => {
         price: 25000,
         quantity: 10,
         description: "Reliable family sedan",
+        imageUrl: "https://example.com/car.jpg",
       },
     });
 
@@ -289,6 +297,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 25000,
           quantity: 10,
           description: "Reliable sedan",
+          imageUrl: "https://example.com/car.jpg",
           createdAt: new Date("2024-01-01T12:00:00Z"),
         },
         {
@@ -302,6 +311,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 18000,
           quantity: 5,
           description: "Comfortable sedan",
+          imageUrl: "https://example.com/car.jpg",
           createdAt: new Date("2024-01-03T12:00:00Z"),
         },
         {
@@ -315,6 +325,7 @@ describe("GET /api/v1/vehicles", () => {
           price: 45000,
           quantity: 2,
           description: "Sporty coupe",
+          imageUrl: "https://example.com/car.jpg",
           createdAt: new Date("2024-01-02T12:00:00Z"),
         },
       ],

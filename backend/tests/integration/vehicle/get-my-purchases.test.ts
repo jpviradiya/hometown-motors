@@ -39,6 +39,7 @@ async function createVehicle() {
       price: 25000,
       quantity: 10,
       description: "Test vehicle",
+      imageUrl: "https://example.com/car.jpg",
     },
   });
 }
@@ -48,7 +49,6 @@ describe("GET /api/v1/purchases/me", () => {
     await prisma.$transaction(
       [
         prisma.purchase.deleteMany(),
-        prisma.vehicleImage.deleteMany(),
         prisma.vehicle.deleteMany(),
         prisma.user.deleteMany(),
       ],

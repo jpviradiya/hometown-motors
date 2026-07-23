@@ -11,4 +11,5 @@ export interface UpdateVehicleDto {
   price?: number | undefined;
   quantity?: number | undefined;
   description?: string | undefined;
+  imageUrl?: string | undefined;
 }
