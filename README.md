@@ -1,5 +1,7 @@
 # Hometown Motors - Car Dealership Inventory System
 
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-hometown--motors.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://hometown-motors.vercel.app/)
+[![Status](https://img.shields.io/badge/Status-Live_%26_Operational-2ea44f?style=for-the-badge&logo=statuspage&logoColor=white)](https://hometown-motors.vercel.app/)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Express](https://img.shields.io/badge/Express-5.0-000000?logo=express&logoColor=white)](https://expressjs.com/)
@@ -9,6 +11,16 @@
 [![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![pnpm](https://img.shields.io/badge/pnpm-11.0-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+
+> ### 🌐 Experience Hometown Motors Live!
+>
+> 🚀 **[https://hometown-motors.vercel.app](https://hometown-motors.vercel.app/)**
+>
+> *Explore the fully deployed automotive showroom and administrative management dashboard in real-time!*
+>
+> - 🚗 **Browse 50+ Vehicles**: Interactive filtering by Category, Fuel Type, Price & Transmission.
+> - ⚡ **Instant Test-Drive & Order Flow**: Full customer authentication and purchase state tracking.
+> - 📊 **Live Admin Panel**: Real-time stock restock alerts, inventory analytics charts, and CRUD management.
 
 A production-ready, full-stack **Car Dealership Inventory System** built as part of a **Test-Driven Development (TDD) Kata**. The application features a luxury automotive UI/UX design inspired by Porsche, Tesla, and BMW, paired with a robust REST API backend supporting JWT Authentication, stock management, and customer purchasing flows.
 
