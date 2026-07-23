@@ -185,4 +185,63 @@ describe("GET /api/v1/vehicles", () => {
 
     expect(response.body.pagination.total).toBe(0);
   });
+
+  it("should filter vehicles by category", async () => {
+    const response = await request(app).get("/api/v1/vehicles?category=SUV");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles.every((v: any) => v.category === "SUV")).toBe(true);
+  });
+
+  it("should filter vehicles by fuel type", async () => {
+    const response = await request(app).get("/api/v1/vehicles?fuelType=PETROL");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles.every((v: any) => v.fuelType === "PETROL")).toBe(true);
+  });
+
+  it("should filter vehicles by transmission", async () => {
+    const response = await request(app).get("/api/v1/vehicles?transmission=AUTOMATIC");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles.every((v: any) => v.transmission === "AUTOMATIC")).toBe(
+      true
+    );
+  });
+
+  it("should filter vehicles using minimum price", async () => {
+    const response = await request(app).get("/api/v1/vehicles?minPrice=30000");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles.every((v: any) => v.price >= 30000)).toBe(true);
+  });
+
+  it("should filter vehicles using maximum price", async () => {
+    const response = await request(app).get("/api/v1/vehicles?maxPrice=30000");
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicles.every((v: any) => v.price <= 30000)).toBe(true);
+  });
+
+  it("should combine multiple filters", async () => {
+    const response = await request(app).get(
+      "/api/v1/vehicles?category=SEDAN&fuelType=PETROL&transmission=AUTOMATIC"
+    );
+
+    expect(response.status).toBe(200);
+
+    expect(
+      response.body.vehicles.every(
+        (v: any) =>
+          v.category === "SEDAN" &&
+          v.fuelType === "PETROL" &&
+          v.transmission === "AUTOMATIC"
+      )
+    ).toBe(true);
+  });
 });
