@@ -82,4 +82,18 @@ describe("DELETE /api/v1/vehicles/:id", () => {
 
     expect(deletedVehicle).toBeNull();
   });
+
+  it("should return 404 when deleting a non-existent vehicle", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const response = await request(app)
+      .delete("/api/v1/vehicles/non-existent-id")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+
+    expect(response.body).toMatchObject({
+      message: "Vehicle not found",
+    });
+  });
 });
