@@ -1,3 +1,4 @@
+import { NotFoundError } from "#/errors";
 import { VehicleRepository } from "#/repositories";
 import { UpdateVehicleDto } from "#/types/vehicle.types";
 
@@ -31,6 +32,12 @@ export class VehicleService {
   }
 
   async updateVehicle(id: string, data: UpdateVehicleDto) {
+    const exists = await this.repository.exists(id);
+
+    if (!exists) {
+      throw new NotFoundError("Vehicle not found");
+    }
+
     return this.repository.update(id, data);
   }
 }

@@ -102,4 +102,17 @@ export class VehicleRepository {
       data,
     });
   }
+
+  async exists(id: string): Promise<boolean> {
+    const vehicle = await prisma.vehicle.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return vehicle !== null;
+  }
 }
