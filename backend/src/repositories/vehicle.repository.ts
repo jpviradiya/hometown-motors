@@ -99,7 +99,7 @@ export class VehicleRepository {
   async update(id: string, data: UpdateVehicleDto) {
     return prisma.vehicle.update({
       where: { id },
-      data,
+      data: data as any,
     });
   }
 
