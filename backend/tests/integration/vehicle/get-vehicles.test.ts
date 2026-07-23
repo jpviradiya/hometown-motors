@@ -6,14 +6,17 @@ import { prisma } from "#/lib/prisma";
 
 describe("GET /api/v1/vehicles", () => {
   beforeEach(async () => {
-    await prisma.$transaction([
-      prisma.purchase.deleteMany(),
-      prisma.vehicleImage.deleteMany(),
-      prisma.vehicle.deleteMany(),
-      prisma.user.deleteMany(),
-    ], {
-      timeout: 30000,
-    });
+    await prisma.$transaction(
+      [
+        prisma.purchase.deleteMany(),
+        prisma.vehicleImage.deleteMany(),
+        prisma.vehicle.deleteMany(),
+        prisma.user.deleteMany(),
+      ],
+      {
+        timeout: 30000,
+      }
+    );
   });
 
   it("should return an empty array when no vehicles exist", async () => {
@@ -245,5 +248,42 @@ describe("GET /api/v1/vehicles", () => {
           v.transmission === "AUTOMATIC"
       )
     ).toBe(true);
+  });
+
+  it("should return a vehicle by id", async () => {
+    const vehicle = await prisma.vehicle.create({
+      data: {
+        make: "Toyota",
+        model: "Corolla",
+        category: "SEDAN",
+        year: 2024,
+        fuelType: "PETROL",
+        color: "White",
+        transmission: "AUTOMATIC",
+        price: 25000,
+        quantity: 10,
+        description: "Reliable family sedan",
+      },
+    });
+
+    const response = await request(app).get(`/api/v1/vehicles/${vehicle.id}`);
+
+    expect(response.status).toBe(200);
+
+    expect(response.body.vehicle).toMatchObject({
+      id: vehicle.id,
+      make: "Toyota",
+      model: "Corolla",
+    });
+  });
+
+  it("should return 404 when vehicle does not exist", async () => {
+    const response = await request(app).get("/api/v1/vehicles/non-existent-id");
+
+    expect(response.status).toBe(404);
+
+    expect(response.body).toMatchObject({
+      message: expect.any(String),
+    });
   });
 });
