@@ -1,4 +1,5 @@
 import { VehicleRepository } from "#/repositories";
+import { UpdateVehicleDto } from "#/types/vehicle.types";
 
 export class VehicleService {
   constructor(private readonly repository = new VehicleRepository()) {}
@@ -27,5 +28,9 @@ export class VehicleService {
 
   async getVehicleById(id: string) {
     return this.repository.findById(id);
+  }
+
+  async updateVehicle(id: string, data: UpdateVehicleDto) {
+    return this.repository.update(id, data);
   }
 }

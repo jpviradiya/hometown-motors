@@ -53,3 +53,18 @@ export const getVehicleById = asyncHandler(async (req, res) => {
     vehicle,
   });
 });
+
+export const updateVehicle = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || Array.isArray(id)) {
+    throw new NotFoundError("Vehicle not found");
+  }
+
+  const vehicle = await service.updateVehicle(id, req.body);
+
+  res.status(200).json({
+    message: "Vehicle updated successfully",
+    vehicle,
+  });
+});

@@ -1,4 +1,5 @@
 import { prisma } from "#/lib/prisma";
+import { UpdateVehicleDto } from "#/types/vehicle.types";
 
 export class VehicleRepository {
   async create(data: Vehicle) {
@@ -92,6 +93,13 @@ export class VehicleRepository {
       where: {
         id,
       },
+    });
+  }
+
+  async update(id: string, data: UpdateVehicleDto) {
+    return prisma.vehicle.update({
+      where: { id },
+      data,
     });
   }
 }
