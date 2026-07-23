@@ -5,7 +5,7 @@ import { VehicleCard } from "@/components/vehicles/VehicleCard";
 import { SearchBar } from "@/components/vehicles/SearchBar";
 import { VehicleFilters } from "@/components/vehicles/VehicleFilters";
 import { Pagination } from "@/components/vehicles/Pagination";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { VehicleCardSkeleton } from "@/components/common/Skeleton";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
 
@@ -18,7 +18,7 @@ const DEFAULT_FILTERS: VehicleFilterOptions = {
   maxPrice: undefined,
   sort: undefined,
   page: 1,
-  limit: 6, // 6 items per page for clear pagination testing across multiple pages
+  limit: 6,
 };
 
 export const VehicleListPage: React.FC = () => {
@@ -96,9 +96,13 @@ export const VehicleListPage: React.FC = () => {
           onReset={handleResetFilters}
         />
 
-        {/* Results / Content */}
+        {/* Results / Skeleton Loading / Error / Empty States */}
         {loading ? (
-          <LoadingSpinner label="Fetching vehicle inventory..." />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <VehicleCardSkeleton key={i} />
+            ))}
+          </div>
         ) : error ? (
           <ErrorState
             title="Unable to load vehicles"

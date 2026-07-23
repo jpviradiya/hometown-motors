@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { VehicleTable } from "@/components/admin/VehicleTable";
 import { SearchBar } from "@/components/vehicles/SearchBar";
 import { Pagination } from "@/components/vehicles/Pagination";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { TableSkeleton } from "@/components/common/Skeleton";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
 import { RestockDialog } from "@/components/admin/RestockDialog";
@@ -110,9 +110,9 @@ export const VehicleManagementPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Vehicle Table View */}
+      {/* Vehicle Table View / TableSkeleton Loader */}
       {loading ? (
-        <LoadingSpinner label="Loading vehicle inventory table..." />
+        <TableSkeleton rows={8} />
       ) : error ? (
         <ErrorState
           title="Inventory Unavailable"

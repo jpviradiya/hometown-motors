@@ -2,16 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Car, Package, DollarSign, AlertTriangle, Plus, ArrowRight } from "lucide-react";
 import type { Vehicle } from "@/types/vehicle";
-import { getVehicles } from "@/api/vehicle.api";
+import { getVehicles, deleteVehicle } from "@/api/vehicle.api";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { DashboardCard } from "@/components/admin/DashboardCard";
 import { VehicleTable } from "@/components/admin/VehicleTable";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { StatCardSkeleton, TableSkeleton } from "@/components/common/Skeleton";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
 import { RestockDialog } from "@/components/admin/RestockDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { deleteVehicle } from "@/api/vehicle.api";
 import { toast } from "sonner";
 
 export const DashboardPage: React.FC = () => {
@@ -30,7 +29,6 @@ export const DashboardPage: React.FC = () => {
     setError(false);
 
     try {
-      // Fetch catalog list with high limit for aggregate metric calculations
       const response = await getVehicles({ limit: 100 });
       setVehicles(response.vehicles || []);
       setTotalCount(response.pagination?.total || (response.vehicles || []).length);
@@ -96,7 +94,14 @@ export const DashboardPage: React.FC = () => {
       />
 
       {loading ? (
-        <LoadingSpinner label="Calculating inventory metrics..." />
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
+          </div>
+          <TableSkeleton rows={5} />
+        </div>
       ) : error ? (
         <ErrorState
           title="Dashboard Metrics Unavailable"
