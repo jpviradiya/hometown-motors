@@ -5,6 +5,7 @@ import { VehicleService } from "#/services";
 import { createVehicleSchema, updateVehicleSchema } from "#/validators";
 import { NotFoundError } from "#/errors";
 import { purchaseSchema } from "#/validators/purchase.validator";
+import { restockSchema } from "#/validators/restock.validator";
 
 const service = new VehicleService();
 
@@ -98,5 +99,21 @@ export const purchaseVehicle = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     message: "Vehicle purchased successfully",
+  });
+});
+
+export const restockVehicle = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || Array.isArray(id)) {
+    throw new NotFoundError("Vehicle not found");
+  }
+
+  const { quantity } = restockSchema.parse(req.body);
+
+  await service.restockVehicle(id, quantity);
+
+  res.status(200).json({
+    message: "Vehicle restocked successfully",
   });
 });

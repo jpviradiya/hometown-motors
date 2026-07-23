@@ -77,4 +77,14 @@ export class VehicleService {
       purchasePrice: Number(vehicle.price),
     });
   }
+
+  async restockVehicle(vehicleId: string, quantity: number) {
+    const vehicle = await this.repository.findById(vehicleId);
+
+    if (!vehicle) {
+      throw new NotFoundError("Vehicle not found");
+    }
+
+    return this.repository.increaseStock(vehicleId, quantity);
+  }
 }

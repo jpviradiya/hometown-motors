@@ -182,4 +182,19 @@ export class VehicleRepository {
       });
     });
   }
+
+  async increaseStock(vehicleId: string, quantity: number) {
+    return prisma.vehicle.update({
+      where: {
+        id: vehicleId,
+      },
+      data: {
+        quantity: {
+          increment: quantity,
+        },
+      },
+    });
+  }
+
+  
 }
