@@ -1,16 +1,4 @@
 import { prisma } from "#/lib/prisma";
-type Vehicle = {
-  make: string;
-  model: string;
-  category: any;
-  year: number;
-  fuelType: any;
-  color: string;
-  transmission: any;
-  price: number;
-  quantity: number;
-  description: string;
-};
 
 export class VehicleRepository {
   async create(data: Vehicle) {
@@ -25,27 +13,50 @@ export class VehicleRepository {
     });
   }
 
-  async findPaginated(page: number, limit: number, search?: string) {
+  async findPaginated(page: number, limit: number, filters: FilterVehicle) {
     const skip = (page - 1) * limit;
 
-    const where = search
-      ? {
-          OR: [
-            {
-              make: {
-                contains: search,
-                mode: "insensitive" as const,
-              },
+    const where = {
+      ...(filters.search && {
+        OR: [
+          {
+            make: {
+              contains: filters.search,
+              mode: "insensitive" as const,
             },
-            {
-              model: {
-                contains: search,
-                mode: "insensitive" as const,
-              },
+          },
+          {
+            model: {
+              contains: filters.search,
+              mode: "insensitive" as const,
             },
-          ],
-        }
-      : {};
+          },
+        ],
+      }),
+
+      ...(filters.category && {
+        category: filters.category as any,
+      }),
+
+      ...(filters.fuelType && {
+        fuelType: filters.fuelType as any,
+      }),
+
+      ...(filters.transmission && {
+        transmission: filters.transmission as any,
+      }),
+
+      ...((filters.minPrice !== undefined || filters.maxPrice !== undefined) && {
+        price: {
+          ...(filters.minPrice !== undefined && {
+            gte: filters.minPrice,
+          }),
+          ...(filters.maxPrice !== undefined && {
+            lte: filters.maxPrice,
+          }),
+        },
+      }),
+    };
 
     const [vehicles, total] = await Promise.all([
       prisma.vehicle.findMany({

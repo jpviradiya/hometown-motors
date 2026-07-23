@@ -11,8 +11,8 @@ export class VehicleService {
     return this.repository.findAll();
   }
 
-  async getPaginatedVehicles(page: number, limit: number, search?: string) {
-    const { vehicles, total } = await this.repository.findPaginated(page, limit, search);
+  async getPaginatedVehicles(page: number, limit: number, filters: FilterVehicle) {
+    const { vehicles, total } = await this.repository.findPaginated(page, limit, filters);
 
     return {
       vehicles,

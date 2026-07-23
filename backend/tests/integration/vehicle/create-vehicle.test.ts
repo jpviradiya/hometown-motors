@@ -50,7 +50,9 @@ describe("POST /api/v1/vehicles", () => {
       prisma.vehicleImage.deleteMany(),
       prisma.vehicle.deleteMany(),
       prisma.user.deleteMany(),
-    ]);
+    ], {
+      timeout: 30000,
+    });
   });
 
   it("should create a vehicle when requested by an admin", async () => {

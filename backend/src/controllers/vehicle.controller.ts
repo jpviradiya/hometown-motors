@@ -19,9 +19,16 @@ export const createVehicle = asyncHandler(async (req: Request, res: Response) =>
 export const getVehicles = asyncHandler(async (req, res) => {
   const page = Number(req.query.page ?? 1);
   const limit = Number(req.query.limit ?? 10);
-  const search = typeof req.query.search === "string" ? req.query.search : undefined;
+  const filters = {
+    ...(typeof req.query.search === "string" && { search: req.query.search }),
+    ...(typeof req.query.category === "string" && { category: req.query.category }),
+    ...(typeof req.query.fuelType === "string" && { fuelType: req.query.fuelType }),
+    ...(typeof req.query.transmission === "string" && { transmission: req.query.transmission }),
+    ...(req.query.minPrice ? { minPrice: Number(req.query.minPrice) } : {}),
+    ...(req.query.maxPrice ? { maxPrice: Number(req.query.maxPrice) } : {}),
+  };
 
-  const result = await service.getPaginatedVehicles(page, limit, search);
+  const result = await service.getPaginatedVehicles(page, limit, filters);
 
   res.status(200).json(result);
 });
