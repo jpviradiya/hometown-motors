@@ -2,16 +2,16 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-interface AdminRouteProps {
+interface ProtectedRouteProps {
   children?: React.ReactNode;
 }
 
 /**
- * Route guard restricting access to admin users only.
- * Redirects non-admin users to homepage (/).
+ * Route guard restricting access to authenticated users only.
+ * Redirects unauthenticated users to /login.
  */
-export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-  const { user, isAuthenticated, loading } = useAuth();
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
 
   // Prevent early redirect while session restoration is in progress
   if (loading) {
@@ -26,11 +26,7 @@ export const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user?.role?.toLowerCase() !== "admin") {
-    return <Navigate to="/" replace />;
-  }
-
   return children ? <>{children}</> : <Outlet />;
 };
 
-export default AdminRoute;
+export default ProtectedRoute;

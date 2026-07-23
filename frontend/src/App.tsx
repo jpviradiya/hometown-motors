@@ -1,7 +1,14 @@
+import { Toaster } from "sonner";
+import { AuthProvider } from "./context/AuthContext";
 import AppRouter from "./routes/AppRouter";
 
 function App() {
-  return <AppRouter />;
+  return (
+    <AuthProvider>
+      <AppRouter />
+      <Toaster position="top-right" richColors />
+    </AuthProvider>
+  );
 }
 
 export default App;
