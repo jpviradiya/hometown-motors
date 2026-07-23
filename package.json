@@ -7,8 +7,10 @@
     "dev": "pnpm --parallel --filter backend --filter frontend dev",
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
+    "build": "pnpm --filter backend build",
     "build:backend": "pnpm --filter backend build",
-    "build:frontend": "pnpm --filter frontend build"
+    "build:frontend": "pnpm --filter frontend build",
+    "postinstall": "pnpm --filter backend exec prisma generate"
   },
   "keywords": [],
   "author": "",
