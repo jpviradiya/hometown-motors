@@ -1,69 +1,54 @@
 import { Routes, Route } from "react-router-dom";
+import Navbar from "../components/layout/Navbar";
+import HomePage from "../pages/customer/HomePage";
+import VehicleListPage from "../pages/customer/VehicleListPage";
+import VehicleDetailPage from "../pages/customer/VehicleDetailPage";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
-import { useAuth } from "../hooks/useAuth";
-import { Button } from "../components/ui/button";
-
-function HomePage() {
-  const { user, logout, isAuthenticated } = useAuth();
-
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-background text-foreground">
-      <div className="max-w-md w-full space-y-6 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Hometown Motors</h1>
-        {isAuthenticated && user ? (
-          <div className="space-y-4 rounded-lg border p-6 shadow-xs bg-card">
-            <p className="text-lg">
-              Welcome, <span className="font-semibold">{user.firstName || user.name || user.email}</span>!
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Role: <span className="capitalize font-medium">{user.role}</span>
-            </p>
-            <Button onClick={logout} variant="outline" className="w-full cursor-pointer">
-              Logout
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-muted-foreground">Welcome to Hometown Motors application.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function AppRouter() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <div className="flex min-h-screen flex-col bg-background">
+      <Navbar />
+      <main className="flex-1">
+        <Routes>
+          {/* Public Customer Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/vehicles" element={<VehicleListPage />} />
+          <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
 
-      {/* Public Home Route */}
-      <Route path="/" element={<HomePage />} />
+          {/* Authentication Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-      {/* Protected Routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/protected" element={<HomePage />} />
-      </Route>
+          {/* Protected Customer Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/protected" element={<HomePage />} />
+          </Route>
 
-      {/* Admin Routes */}
-      <Route element={<AdminRoute />}>
-        <Route path="/admin" element={<HomePage />} />
-      </Route>
+          {/* Protected Admin Routes */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
+          </Route>
 
-      {/* Fallback 404 Route */}
-      <Route
-        path="*"
-        element={
-          <div className="flex h-screen items-center justify-center">
-            <h1 className="text-2xl font-bold">404 - Page Not Found</h1>
-          </div>
-        }
-      />
-    </Routes>
+          {/* Fallback 404 Route */}
+          <Route
+            path="*"
+            element={
+              <div className="flex h-full min-h-[400px] items-center justify-center p-6 text-center">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-extrabold tracking-tight">404 - Page Not Found</h1>
+                  <p className="text-sm text-muted-foreground">The page you are looking for does not exist.</p>
+                </div>
+              </div>
+            }
+          />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
