@@ -2,52 +2,70 @@ import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import app from "#/app";
-import { prisma } from "#/lib/prisma";
 import { generateJwtToken } from "#/lib/jwt";
+import { prisma } from "#/lib/prisma";
+
+async function createUser(role: "ADMIN" | "USER") {
+  const email = `${role.toLowerCase()}-${Date.now()}@test.com`;
+
+  const user = await prisma.user.create({
+    data: {
+      name: role,
+      email,
+      passwordHash: "hashed-password",
+      role,
+    },
+  });
+
+  const token = generateJwtToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  });
+
+  return {
+    user,
+    token,
+  };
+}
+
+async function createVehicle() {
+  return prisma.vehicle.create({
+    data: {
+      make: "Toyota",
+      model: "Corolla",
+      category: "SEDAN",
+      year: 2024,
+      fuelType: "PETROL",
+      color: "White",
+      transmission: "AUTOMATIC",
+      price: 25000,
+      quantity: 10,
+      description: "Test vehicle",
+    },
+  });
+}
 
 describe("PATCH /api/v1/vehicles/:id", () => {
   beforeEach(async () => {
-    await prisma.$transaction([
-      prisma.purchase.deleteMany(),
-      prisma.vehicleImage.deleteMany(),
-      prisma.vehicle.deleteMany(),
-      prisma.user.deleteMany(),
-    ], {
-      maxWait: 30000,
-      timeout: 30000,
-    });
+    await prisma.$transaction(
+      [
+        prisma.purchase.deleteMany(),
+        prisma.vehicleImage.deleteMany(),
+        prisma.vehicle.deleteMany(),
+        prisma.user.deleteMany(),
+      ],
+      {
+        maxWait: 30000,
+        timeout: 30000,
+      }
+    );
   });
 
   it("should update a vehicle", async () => {
-    const admin = await prisma.user.create({
-      data: {
-        name: "Admin",
-        email: "admin@test.com",
-        passwordHash: "hashed-password",
-        role: "ADMIN",
-      },
-    });
+    const { token } = await createUser("ADMIN");
 
-    const token = generateJwtToken({
-      id: admin.id,
-      email: admin.email,
-      role: admin.role,
-    });
-
-    const vehicle = await prisma.vehicle.create({
-      data: {
-        make: "Toyota",
-        model: "Corolla",
-        category: "SEDAN",
-        year: 2024,
-        fuelType: "PETROL",
-        color: "White",
-        transmission: "AUTOMATIC",
-        price: 25000,
-        quantity: 10,
-        description: "Old description",
-      },
-    });
+    const vehicle = await createVehicle();
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
@@ -78,20 +96,7 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 404 when updating a non-existent vehicle", async () => {
-    const admin = await prisma.user.create({
-      data: {
-        name: "Admin",
-        email: "admin@test.com",
-        passwordHash: "hashed-password",
-        role: "ADMIN",
-      },
-    });
-
-    const token = generateJwtToken({
-      id: admin.id,
-      email: admin.email,
-      role: admin.role,
-    });
+    const { token } = await createUser("ADMIN");
 
     const response = await request(app)
       .patch("/api/v1/vehicles/non-existent-id")
@@ -108,35 +113,9 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 403 when a non-admin updates a vehicle", async () => {
-    const user = await prisma.user.create({
-      data: {
-        name: "User",
-        email: "user@test.com",
-        passwordHash: "hashed-password",
-        role: "USER",
-      },
-    });
+    const { token } = await createUser("USER");
 
-    const token = generateJwtToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-
-    const vehicle = await prisma.vehicle.create({
-      data: {
-        make: "Toyota",
-        model: "Corolla",
-        category: "SEDAN",
-        year: 2024,
-        fuelType: "PETROL",
-        color: "White",
-        transmission: "AUTOMATIC",
-        price: 25000,
-        quantity: 10,
-        description: "Test vehicle",
-      },
-    });
+    const vehicle = await createVehicle();
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
@@ -150,5 +129,95 @@ describe("PATCH /api/v1/vehicles/:id", () => {
     expect(response.body).toMatchObject({
       message: "Forbidden",
     });
+  });
+
+  it("should return 400 when price is less than or equal to zero", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        price: 0,
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 400 when quantity is negative", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        quantity: -1,
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 400 when transmission is invalid", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        transmission: "INVALID",
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 400 when fuel type is invalid", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        fuelType: "INVALID",
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 400 when category is invalid", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        category: "INVALID",
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 400 when year is invalid", async () => {
+    const { token } = await createUser("ADMIN");
+
+    const vehicle = await createVehicle();
+
+    const response = await request(app)
+      .patch(`/api/v1/vehicles/${vehicle.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        year: 1800,
+      });
+
+    expect(response.status).toBe(400);
   });
 });
