@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Loader2, ShoppingBag, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Loader2, ShoppingBag, AlertCircle, CheckCircle2, X } from "lucide-react";
 import { toast } from "sonner";
 import type { Vehicle } from "@/types/vehicle";
 import { purchaseVehicle } from "@/api/vehicle.api";
@@ -57,19 +57,20 @@ export const PurchaseDialog: React.FC<PurchaseDialogProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-      <div className="w-full max-w-lg rounded-xl border bg-card p-6 shadow-xl space-y-6">
-        <div className="flex items-center justify-between border-b pb-4">
-          <div className="flex items-center gap-2 font-bold text-lg">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-2 sm:p-4 animate-in fade-in">
+      <div className="w-full max-w-lg rounded-t-2xl sm:rounded-xl border bg-card p-4 sm:p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-5 sm:slide-in-from-bottom-0">
+        <div className="flex items-center justify-between border-b pb-3">
+          <div className="flex items-center gap-2 font-bold text-base sm:text-lg">
             <ShoppingBag className="h-5 w-5 text-primary" />
             <span>Confirm Purchase</span>
           </div>
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="text-muted-foreground hover:text-foreground text-sm font-semibold cursor-pointer disabled:opacity-50"
+            className="text-muted-foreground hover:text-foreground p-1 rounded-md cursor-pointer disabled:opacity-50 min-h-[36px] min-w-[36px] flex items-center justify-center"
+            aria-label="Close dialog"
           >
-            ✕
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -80,18 +81,18 @@ export const PurchaseDialog: React.FC<PurchaseDialogProps> = ({
           </div>
         )}
 
-        <div className="flex items-center gap-4 p-3 rounded-lg bg-muted/40 border">
+        <div className="flex items-center gap-3 sm:gap-4 p-3 rounded-lg bg-muted/40 border">
           <img
             src={vehicle.imageUrl || "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&auto=format&fit=crop&q=60"}
             alt={`${vehicle.make} ${vehicle.model}`}
-            className="h-16 w-24 object-cover rounded-md border"
+            className="h-16 w-20 sm:w-24 object-cover rounded-md border shrink-0 bg-muted"
           />
-          <div>
-            <h4 className="font-bold text-base">
+          <div className="min-w-0 flex-1">
+            <h4 className="font-bold text-sm sm:text-base truncate">
               {vehicle.make} {vehicle.model} ({vehicle.year})
             </h4>
-            <p className="text-xs text-muted-foreground">
-              Category: {vehicle.category} • Fuel: {vehicle.fuelType}
+            <p className="text-xs text-muted-foreground truncate">
+              {vehicle.category} • {vehicle.fuelType}
             </p>
             <p className="text-sm font-semibold text-primary mt-1">
               ${unitPrice.toLocaleString()} / unit
@@ -100,7 +101,7 @@ export const PurchaseDialog: React.FC<PurchaseDialogProps> = ({
         </div>
 
         <div className="space-y-4 border-y py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
             <span className="text-sm font-medium">Select Quantity:</span>
             <QuantitySelector
               quantity={quantity}
@@ -118,13 +119,13 @@ export const PurchaseDialog: React.FC<PurchaseDialogProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2 sm:gap-3 pt-2">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
             disabled={isSubmitting}
-            className="cursor-pointer"
+            className="w-full sm:w-auto cursor-pointer min-h-[44px]"
           >
             Cancel
           </Button>
@@ -132,7 +133,7 @@ export const PurchaseDialog: React.FC<PurchaseDialogProps> = ({
             type="button"
             onClick={handlePurchase}
             disabled={isSubmitting || vehicle.quantity <= 0}
-            className="cursor-pointer"
+            className="w-full sm:w-auto cursor-pointer min-h-[44px] font-bold"
           >
             {isSubmitting ? (
               <>

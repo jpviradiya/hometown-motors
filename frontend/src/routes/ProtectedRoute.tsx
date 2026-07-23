@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 interface ProtectedRouteProps {
@@ -8,10 +8,11 @@ interface ProtectedRouteProps {
 
 /**
  * Route guard restricting access to authenticated users only.
- * Redirects unauthenticated users to /login.
+ * Redirects unauthenticated users to /login preserving attempted location.
  */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
 
   // Prevent early redirect while session restoration is in progress
   if (loading) {
@@ -23,7 +24,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children ? <>{children}</> : <Outlet />;

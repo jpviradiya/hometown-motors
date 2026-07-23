@@ -4,20 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Loader2, UserPlus, Mail, Lock, User, Eye, EyeOff, Car } from "lucide-react";
+import { Loader2, UserPlus, Mail, Lock, User, Eye, EyeOff, Car, ShieldCheck, CheckCircle2, Award } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 const registerSchema = z
   .object({
@@ -70,7 +62,7 @@ export const RegisterPage: React.FC = () => {
     try {
       const { confirmPassword, ...payload } = data;
       await registerUser(payload);
-      toast.success("Account registered successfully! Please log in.");
+      toast.success("Account created successfully! Please log in.");
       navigate("/login");
     } catch (error: any) {
       const errorMsg =
@@ -86,164 +78,228 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-muted/30 px-4 py-12">
-      <Card className="w-full max-w-md shadow-xl border border-border/60">
-        <CardHeader className="space-y-2 text-center pb-6">
-          <div className="flex justify-center mb-1">
-            <div className="p-3 rounded-full bg-primary/10 text-primary">
-              <Car className="h-8 w-8" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-black tracking-tight">Create an Account</CardTitle>
-          <CardDescription>
-            Enter your details below to register for Hometown Motors
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-[calc(100vh-4rem)] grid grid-cols-1 lg:grid-cols-12 bg-background">
+      {/* Left Column: Automotive Hero Visual (Desktop Only) */}
+      <div className="hidden lg:relative lg:col-span-6 xl:col-span-7 lg:flex flex-col justify-between p-12 overflow-hidden">
+        {/* Hero Background Image */}
+        <img
+          src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&auto=format&fit=crop&q=80"
+          alt="Luxury Electric Sports Car"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {/* Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/40" />
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+        {/* Top Branding Pill */}
+        <div className="relative z-10 flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-full bg-black/60 text-white px-4 py-1.5 text-xs font-bold border border-white/20 backdrop-blur-md shadow-lg">
+            <Car className="h-4 w-4 text-primary" />
+            <span className="tracking-wide">Hometown Motors</span>
+          </div>
+        </div>
+
+        {/* Center Tagline Showcase */}
+        <div className="relative z-10 space-y-4 max-w-xl text-white">
+          <div className="inline-flex items-center gap-2 rounded-md bg-primary/20 text-primary border border-primary/30 px-3 py-1 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+            <Award className="h-3.5 w-3.5" />
+            <span>Join Our Exclusive Network</span>
+          </div>
+          <h1 className="text-4xl xl:text-5xl font-black tracking-tight leading-tight text-white">
+            Your Journey to Luxury Starts Here.
+          </h1>
+          <p className="text-sm xl:text-base text-gray-300 font-medium leading-relaxed">
+            Create an account to browse premium vehicles, save favorites, and complete purchases with complete confidence.
+          </p>
+        </div>
+
+        {/* Bottom Social Proof */}
+        <div className="relative z-10 flex items-center gap-6 pt-6 border-t border-white/15 text-xs text-gray-300 font-semibold">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            <span>Instant Access</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span>Transparent Pricing</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column: Registration Form Card */}
+      <div className="col-span-1 lg:col-span-6 xl:col-span-5 flex items-center justify-center p-4 sm:p-8 lg:p-12 bg-muted/20">
+        <div className="w-full max-w-md space-y-6">
+          {/* Card Wrapper */}
+          <div className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-xl space-y-6 backdrop-blur-xs">
+            {/* Header */}
+            <div className="space-y-2 text-center">
+              <div className="flex justify-center lg:hidden mb-3">
+                <div className="p-3 rounded-2xl bg-primary text-primary-foreground shadow-xs">
+                  <Car className="h-7 w-7" />
+                </div>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+                Create Account
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Enter your details to register for Hometown Motors
+              </p>
+            </div>
+
+            {/* Error Banner */}
             {serverError && (
-              <div className="rounded-lg bg-destructive/15 p-3 text-sm font-medium text-destructive border border-destructive/20 animate-in fade-in">
+              <div className="rounded-xl bg-destructive/15 p-3.5 text-xs font-semibold text-destructive border border-destructive/20 animate-in fade-in">
                 {serverError}
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Form Fields */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="firstName" className="text-xs font-semibold">First Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="firstName"
+                      placeholder="John"
+                      disabled={isSubmitting}
+                      className="pl-10 h-11 text-sm rounded-xl"
+                      {...register("firstName")}
+                    />
+                  </div>
+                  {errors.firstName && (
+                    <p className="text-xs font-medium text-destructive mt-1">{errors.firstName.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="lastName" className="text-xs font-semibold">Last Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="lastName"
+                      placeholder="Doe"
+                      disabled={isSubmitting}
+                      className="pl-10 h-11 text-sm rounded-xl"
+                      {...register("lastName")}
+                    />
+                  </div>
+                  {errors.lastName && (
+                    <p className="text-xs font-medium text-destructive mt-1">{errors.lastName.message}</p>
+                  )}
+                </div>
+              </div>
+
               <div className="space-y-1.5">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="email" className="text-xs font-semibold">Email Address</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="firstName"
-                    placeholder="John"
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    autoComplete="email"
                     disabled={isSubmitting}
-                    className="pl-9"
-                    {...register("firstName")}
+                    className="pl-10 h-11 text-sm rounded-xl"
+                    {...register("email")}
                   />
                 </div>
-                {errors.firstName && (
-                  <p className="text-xs font-medium text-destructive mt-1">{errors.firstName.message}</p>
+                {errors.email && (
+                  <p className="text-xs font-medium text-destructive mt-1">{errors.email.message}</p>
                 )}
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="lastName"
-                    placeholder="Doe"
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
                     disabled={isSubmitting}
-                    className="pl-9"
-                    {...register("lastName")}
+                    className="pl-10 pr-10 h-11 text-sm rounded-xl"
+                    {...register("password")}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
-                {errors.lastName && (
-                  <p className="text-xs font-medium text-destructive mt-1">{errors.lastName.message}</p>
+                {errors.password && (
+                  <p className="text-xs font-medium text-destructive mt-1">{errors.password.message}</p>
                 )}
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  autoComplete="email"
-                  disabled={isSubmitting}
-                  className="pl-9"
-                  {...register("email")}
-                />
+              <div className="space-y-1.5">
+                <Label htmlFor="confirmPassword" className="text-xs font-semibold">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    disabled={isSubmitting}
+                    className="pl-10 pr-10 h-11 text-sm rounded-xl"
+                    {...register("confirmPassword")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none"
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-xs font-medium text-destructive mt-1">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
-              {errors.email && (
-                <p className="text-xs font-medium text-destructive mt-1">{errors.email.message}</p>
-              )}
-            </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  disabled={isSubmitting}
-                  className="pl-9 pr-10"
-                  {...register("password")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-xs font-medium text-destructive mt-1">{errors.password.message}</p>
-              )}
-            </div>
+              <Button
+                type="submit"
+                className="w-full cursor-pointer font-bold h-11 rounded-xl shadow-xs transition-all hover:bg-primary/95 mt-2"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registering...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Create Account
+                  </>
+                )}
+              </Button>
+            </form>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  disabled={isSubmitting}
-                  className="pl-9 pr-10"
-                  {...register("confirmPassword")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="text-xs font-medium text-destructive mt-1">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
-          </CardContent>
-
-          <CardFooter className="flex flex-col space-y-4 pt-2">
-            <Button type="submit" className="w-full cursor-pointer font-bold h-10" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                <>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Register Account
-                </>
-              )}
-            </Button>
-
-            <div className="text-center text-sm text-muted-foreground">
+            {/* Footer Navigation */}
+            <div className="pt-2 text-center text-xs text-muted-foreground border-t">
               Already have an account?{" "}
-              <Link to="/login" className="font-semibold text-primary hover:underline">
+              <Link to="/login" className="font-bold text-primary hover:underline">
                 Sign In
               </Link>
             </div>
-          </CardFooter>
-        </form>
-      </Card>
+          </div>
+
+          {/* Micro Trust Note */}
+          <div className="text-center text-[11px] text-muted-foreground flex items-center justify-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+            <span>Protected by Hometown Motors Secure Authentication</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
