@@ -69,3 +69,17 @@ export const updateVehicle = asyncHandler(async (req, res) => {
     vehicle,
   });
 });
+
+export const deleteVehicle = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id || Array.isArray(id)) {
+    throw new NotFoundError("Vehicle not found");
+  }
+
+  await service.deleteVehicle(id);
+
+  res.status(200).json({
+    message: "Vehicle deleted successfully",
+  });
+});

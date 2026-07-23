@@ -115,4 +115,12 @@ export class VehicleRepository {
 
     return vehicle !== null;
   }
+
+  async delete(id: string) {
+    return prisma.vehicle.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

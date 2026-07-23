@@ -40,4 +40,14 @@ export class VehicleService {
 
     return this.repository.update(id, data);
   }
+
+  async deleteVehicle(id: string) {
+    const exists = await this.repository.exists(id);
+
+    if (!exists) {
+      throw new NotFoundError("Vehicle not found");
+    }
+
+    await this.repository.delete(id);
+  }
 }
