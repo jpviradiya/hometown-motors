@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { asyncHandler } from "#/lib/async-handler";
 import { VehicleService } from "#/services";
-import { createVehicleSchema } from "#/validators";
+import { createVehicleSchema, updateVehicleSchema } from "#/validators";
 import { NotFoundError } from "#/errors";
 
 const service = new VehicleService();
@@ -60,8 +60,9 @@ export const updateVehicle = asyncHandler(async (req, res) => {
   if (!id || Array.isArray(id)) {
     throw new NotFoundError("Vehicle not found");
   }
-
-  const vehicle = await service.updateVehicle(id, req.body);
+  
+  const data = updateVehicleSchema.parse(req.body);
+  const vehicle = await service.updateVehicle(id, data as any);
 
   res.status(200).json({
     message: "Vehicle updated successfully",
