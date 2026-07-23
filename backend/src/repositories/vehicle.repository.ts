@@ -1,51 +1,62 @@
 import { prisma } from "#/lib/prisma";
+import {
+  FuelType,
+  Prisma,
+  Transmission,
+  Vehicle,
+  VehicleCategory,
+} from "#/lib/prisma/generated/client";
 import { CreatePurchaseDto } from "#/types/purchase.types";
-import { UpdateVehicleDto } from "#/types/vehicle.types";
+import { CreateVehicleDto, FilterVehicleDto, UpdateVehicleDto } from "#/types/vehicle.types";
 
 export class VehicleRepository {
-  async create(data: Vehicle) {
+  async create(data: CreateVehicleDto): Promise<Vehicle> {
     return prisma.vehicle.create({
       data,
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<Vehicle[]> {
     return prisma.vehicle.findMany({
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
     });
   }
 
-  async findPaginated(page: number, limit: number, filters: FilterVehicle) {
+  async findPaginated(
+    page: number,
+    limit: number,
+    filters: FilterVehicleDto
+  ): Promise<{ vehicles: Vehicle[]; total: number }> {
     const skip = (page - 1) * limit;
 
-    const where = {
+    const where: Prisma.VehicleWhereInput = {
       ...(filters.search && {
         OR: [
           {
             make: {
               contains: filters.search,
-              mode: "insensitive" as const,
+              mode: "insensitive",
             },
           },
           {
             model: {
               contains: filters.search,
-              mode: "insensitive" as const,
+              mode: "insensitive",
             },
           },
         ],
       }),
 
       ...(filters.category && {
-        category: filters.category as any,
+        category: filters.category as VehicleCategory,
       }),
 
       ...(filters.fuelType && {
-        fuelType: filters.fuelType as any,
+        fuelType: filters.fuelType as FuelType,
       }),
 
       ...(filters.transmission && {
-        transmission: filters.transmission as any,
+        transmission: filters.transmission as Transmission,
       }),
 
       ...((filters.minPrice !== undefined || filters.maxPrice !== undefined) && {
@@ -60,7 +71,7 @@ export class VehicleRepository {
       }),
     };
 
-    let orderBy: any = { createdAt: "asc" };
+    let orderBy: Prisma.VehicleOrderByWithRelationInput = { createdAt: "asc" };
     if (filters.sort) {
       const isDescending = filters.sort.startsWith("-");
       const fieldName = isDescending ? filters.sort.substring(1) : filters.sort;
@@ -89,78 +100,45 @@ export class VehicleRepository {
     };
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<Vehicle | null> {
     return prisma.vehicle.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
     });
   }
 
-  async update(id: string, data: UpdateVehicleDto) {
+  async update(id: string, data: UpdateVehicleDto): Promise<Vehicle> {
     return prisma.vehicle.update({
       where: { id },
-      data: data as any,
+      data: data as Prisma.VehicleUpdateInput,
     });
   }
 
   async exists(id: string): Promise<boolean> {
     const vehicle = await prisma.vehicle.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        id: true,
-      },
+      where: { id },
+      select: { id: true },
     });
 
     return vehicle !== null;
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<Vehicle> {
     return prisma.vehicle.delete({
-      where: {
-        id,
-      },
+      where: { id },
     });
   }
 
-  async hasPurchases(id: string) {
+  async hasPurchases(id: string): Promise<boolean> {
     const count = await prisma.purchase.count({
-      where: {
-        vehicleId: id,
-      },
+      where: { vehicleId: id },
     });
 
     return count > 0;
   }
 
-  async createPurchase(data: {
-    userId: string;
-    vehicleId: string;
-    quantity: number;
-    purchasePrice: number;
-  }) {
-    return prisma.purchase.create({
-      data,
-    });
-  }
-
-  async decreaseStock(id: string, quantity: number) {
-    return prisma.vehicle.update({
-      where: {
-        id,
-      },
-      data: {
-        quantity: {
-          decrement: quantity,
-        },
-      },
-    });
-  }
-
-  async purchaseVehicle(data: CreatePurchaseDto) {
-    return prisma.$transaction(async (tx) => {
+  // Execute purchase creation and stock decrement atomically to prevent inconsistent inventory state.
+  async purchaseVehicle(data: CreatePurchaseDto): Promise<void> {
+    await prisma.$transaction(async (tx) => {
       await tx.purchase.create({
         data: {
           userId: data.userId,
@@ -171,9 +149,7 @@ export class VehicleRepository {
       });
 
       await tx.vehicle.update({
-        where: {
-          id: data.vehicleId,
-        },
+        where: { id: data.vehicleId },
         data: {
           quantity: {
             decrement: data.quantity,
@@ -183,11 +159,9 @@ export class VehicleRepository {
     });
   }
 
-  async increaseStock(vehicleId: string, quantity: number) {
+  async increaseStock(vehicleId: string, quantity: number): Promise<Vehicle> {
     return prisma.vehicle.update({
-      where: {
-        id: vehicleId,
-      },
+      where: { id: vehicleId },
       data: {
         quantity: {
           increment: quantity,
@@ -195,6 +169,4 @@ export class VehicleRepository {
       },
     });
   }
-
-  
 }

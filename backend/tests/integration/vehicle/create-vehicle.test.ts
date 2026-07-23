@@ -1,52 +1,24 @@
 import request from "supertest";
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import { prisma } from "#/lib/prisma";
-import { generateJwtToken } from "#/lib/jwt";
 import app from "#/app";
+import { prisma } from "#/lib/prisma";
+import { UserRole } from "#/lib/prisma/generated/client";
+import { createTestUser, defaultTestVehicleData } from "../../helpers/test-utils";
 
-const defaultVehicle = {
-  make: "Toyota",
-  model: "Corolla",
-  category: "SEDAN",
-  year: 2024,
-  fuelType: "PETROL",
-  color: "White",
-  transmission: "AUTOMATIC",
-  price: 25000,
-  quantity: 10,
-  description: "Reliable family sedan",
-  imageUrl: "https://example.com/car.jpg",
-};
-
-async function createVehicleRequest(overrides: Partial<typeof defaultVehicle> = {}) {
-  const admin = await prisma.user.create({
-    data: {
-      name: "Admin",
-      email: `admin-${Date.now()}-${Math.random()}@test.com`,
-      passwordHash: "hashed-password",
-      role: "ADMIN",
-    },
-  });
-
-  const token = generateJwtToken({
-    id: admin.id,
-    email: admin.email,
-    role: admin.role,
-  });
+async function createVehicleRequest(overrides: Partial<typeof defaultTestVehicleData> = {}) {
+  const { authHeader } = await createTestUser(UserRole.ADMIN);
 
   return request(app)
     .post("/api/v1/vehicles")
-    .set("Authorization", `Bearer ${token}`)
+    .set(authHeader)
     .send({
-      ...defaultVehicle,
+      ...defaultTestVehicleData,
       ...overrides,
     });
 }
 
 describe("POST /api/v1/vehicles", () => {
-  // Redundant beforeEach database cleanup removed in favor of global setup.ts cleanup
-
   it("should create a vehicle when requested by an admin", async () => {
     const response = await createVehicleRequest();
 
@@ -71,25 +43,12 @@ describe("POST /api/v1/vehicles", () => {
   });
 
   it("should return 403 when a normal user tries to create a vehicle", async () => {
-    const user = await prisma.user.create({
-      data: {
-        name: "John",
-        email: "john@test.com",
-        passwordHash: "hashed-password",
-        role: "USER",
-      },
-    });
-
-    const token = generateJwtToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const { authHeader } = await createTestUser(UserRole.USER);
 
     const response = await request(app)
       .post("/api/v1/vehicles")
-      .set("Authorization", `Bearer ${token}`)
-      .send(defaultVehicle);
+      .set(authHeader)
+      .send(defaultTestVehicleData);
 
     expect(response.status).toBe(403);
 

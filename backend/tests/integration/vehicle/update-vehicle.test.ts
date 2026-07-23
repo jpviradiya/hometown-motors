@@ -1,63 +1,19 @@
 import request from "supertest";
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import app from "#/app";
-import { generateJwtToken } from "#/lib/jwt";
 import { prisma } from "#/lib/prisma";
-
-async function createUser(role: "ADMIN" | "USER") {
-  const email = `${role.toLowerCase()}-${Date.now()}@test.com`;
-
-  const user = await prisma.user.create({
-    data: {
-      name: role,
-      email,
-      passwordHash: "hashed-password",
-      role,
-    },
-  });
-
-  const token = generateJwtToken({
-    id: user.id,
-    email: user.email,
-    role: user.role,
-  });
-
-  return {
-    user,
-    token,
-  };
-}
-
-async function createVehicle() {
-  return prisma.vehicle.create({
-    data: {
-      make: "Toyota",
-      model: "Corolla",
-      category: "SEDAN",
-      year: 2024,
-      fuelType: "PETROL",
-      color: "White",
-      transmission: "AUTOMATIC",
-      price: 25000,
-      quantity: 10,
-      description: "Test vehicle",
-      imageUrl: "https://example.com/car.jpg",
-    },
-  });
-}
+import { UserRole } from "#/lib/prisma/generated/client";
+import { createTestUser, createTestVehicle } from "../../helpers/test-utils";
 
 describe("PATCH /api/v1/vehicles/:id", () => {
-  // Redundant beforeEach database cleanup removed in favor of global setup.ts cleanup
-
   it("should update a vehicle", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         price: 30000,
         quantity: 20,
@@ -84,11 +40,11 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 404 when updating a non-existent vehicle", async () => {
-    const { token } = await createUser("ADMIN");
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
 
     const response = await request(app)
       .patch("/api/v1/vehicles/non-existent-id")
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         price: 30000,
       });
@@ -101,13 +57,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 403 when a non-admin updates a vehicle", async () => {
-    const { token } = await createUser("USER");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.USER);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         price: 30000,
       });
@@ -120,13 +75,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 400 when price is less than or equal to zero", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         price: 0,
       });
@@ -135,13 +89,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 400 when quantity is negative", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         quantity: -1,
       });
@@ -150,13 +103,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 400 when transmission is invalid", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         transmission: "INVALID",
       });
@@ -165,13 +117,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 400 when fuel type is invalid", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         fuelType: "INVALID",
       });
@@ -180,13 +131,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 400 when category is invalid", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         category: "INVALID",
       });
@@ -195,13 +145,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should return 400 when year is invalid", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         year: 1800,
       });
@@ -210,13 +159,12 @@ describe("PATCH /api/v1/vehicles/:id", () => {
   });
 
   it("should update only the provided fields", async () => {
-    const { token } = await createUser("ADMIN");
-
-    const vehicle = await createVehicle();
+    const { authHeader } = await createTestUser(UserRole.ADMIN);
+    const vehicle = await createTestVehicle({ description: "Test vehicle" });
 
     const response = await request(app)
       .patch(`/api/v1/vehicles/${vehicle.id}`)
-      .set("Authorization", `Bearer ${token}`)
+      .set(authHeader)
       .send({
         price: 35000,
       });

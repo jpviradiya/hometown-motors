@@ -1,21 +1,27 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined");
+export interface JwtPayload {
+  id: string;
+  email: string;
+  role: string;
 }
 
-export function generateJwtToken(payload: { id: string; email: string; role: string }) {
-  return jwt.sign(payload, JWT_SECRET, {
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET environment variable is not defined");
+  }
+  return secret;
+}
+
+// Generate signed JWT token with standard 1 hour expiration.
+export function generateJwtToken(payload: JwtPayload): string {
+  return jwt.sign(payload, getJwtSecret(), {
     expiresIn: "1h",
   });
 }
 
-export function verifyJwtToken(token: string) {
-  return jwt.verify(token, JWT_SECRET) as {
-    id: string;
-    email: string;
-    role: string;
-  };
+// Verify JWT token signature and return decoded payload.
+export function verifyJwtToken(token: string): JwtPayload {
+  return jwt.verify(token, getJwtSecret()) as JwtPayload;
 }

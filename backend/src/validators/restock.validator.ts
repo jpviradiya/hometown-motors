@@ -1,5 +1,8 @@
 import { z } from "zod";
+import { quantitySchema } from "./purchase.validator";
 
 export const restockSchema = z.object({
-  quantity: z.number().int().positive("Quantity must be greater than zero"),
+  quantity: quantitySchema,
 });
+
+export type RestockDto = z.infer<typeof restockSchema>;

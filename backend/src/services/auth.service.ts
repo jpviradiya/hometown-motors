@@ -1,20 +1,23 @@
 import { ConflictError, UnauthorizedError } from "#/errors";
+import { generateJwtToken } from "#/lib/jwt";
 import { AuthRepository } from "#/repositories";
 import { LoginUserDto, RegisterUserDto } from "#/validators";
 import bcrypt from "bcrypt";
-import { generateJwtToken } from "#/lib/jwt";
+
+const BCRYPT_SALT_ROUNDS = 10;
 
 export class AuthService {
-  constructor(private readonly authRepository: AuthRepository) {}
+  constructor(private readonly authRepository: AuthRepository = new AuthRepository()) {}
 
-  // user registration services
-  async register(data: RegisterUserDto) {
+  // Hash user password using bcrypt before persisting to ensure credentials safety.
+  async register(data: RegisterUserDto): Promise<{ message: string }> {
     const existingUser = await this.authRepository.findByEmail(data.email);
 
     if (existingUser) {
       throw new ConflictError("Email already exists");
     }
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    const hashedPassword = await bcrypt.hash(data.password, BCRYPT_SALT_ROUNDS);
 
     await this.authRepository.create({
       name: data.name,
@@ -27,8 +30,8 @@ export class AuthService {
     };
   }
 
-  // user login services
-  async login(data: LoginUserDto) {
+  // Validate credentials and issue signed JWT for session management.
+  async login(data: LoginUserDto): Promise<{ message: string; token: string }> {
     const user = await this.authRepository.findByEmail(data.email);
 
     if (!user) {
@@ -53,7 +56,7 @@ export class AuthService {
     };
   }
 
-  // get the current user data with token
+  // Fetch current user details from payload ID.
   async getCurrentUser(userId: string) {
     const user = await this.authRepository.findById(userId);
 

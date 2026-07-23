@@ -1,11 +1,11 @@
 import { ConflictError, NotFoundError } from "#/errors";
 import { VehicleRepository } from "#/repositories";
-import { UpdateVehicleDto } from "#/types/vehicle.types";
+import { CreateVehicleDto, FilterVehicleDto, UpdateVehicleDto } from "#/types/vehicle.types";
 
 export class VehicleService {
   constructor(private readonly repository = new VehicleRepository()) {}
 
-  async createVehicle(data: any) {
+  async createVehicle(data: CreateVehicleDto) {
     return this.repository.create(data);
   }
 
@@ -13,7 +13,7 @@ export class VehicleService {
     return this.repository.findAll();
   }
 
-  async getPaginatedVehicles(page: number, limit: number, filters: FilterVehicle) {
+  async getPaginatedVehicles(page: number, limit: number, filters: FilterVehicleDto) {
     const { vehicles, total } = await this.repository.findPaginated(page, limit, filters);
 
     return {
@@ -41,7 +41,8 @@ export class VehicleService {
     return this.repository.update(id, data);
   }
 
-  async deleteVehicle(id: string) {
+  // Prevent deletion of vehicles with purchase records to preserve historical audit logs.
+  async deleteVehicle(id: string): Promise<void> {
     const exists = await this.repository.exists(id);
 
     if (!exists) {
@@ -59,7 +60,8 @@ export class VehicleService {
     await this.repository.delete(id);
   }
 
-  async purchaseVehicle(vehicleId: string, userId: string, quantity: number) {
+  // Prevent overselling by validating stock availability before processing purchase.
+  async purchaseVehicle(vehicleId: string, userId: string, quantity: number): Promise<void> {
     const vehicle = await this.repository.findById(vehicleId);
 
     if (!vehicle) {
