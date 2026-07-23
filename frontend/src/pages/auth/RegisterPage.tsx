@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Loader2, UserPlus, Mail, Lock, User, Eye, EyeOff, Car, ShieldCheck, CheckCircle2, LogIn, Sparkles } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,7 @@ const registerSchema = z
 type RegisterFormInputs = z.infer<typeof registerSchema>;
 
 export const RegisterPage: React.FC = () => {
+  useDocumentTitle("Register");
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);

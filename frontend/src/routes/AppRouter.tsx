@@ -5,6 +5,7 @@ import VehicleListPage from "../pages/customer/VehicleListPage";
 import VehicleDetailPage from "../pages/customer/VehicleDetailPage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
+import NotFoundPage from "../pages/shared/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminRoute from "./AdminRoute";
 
@@ -51,17 +52,7 @@ function AppRouter() {
                 </Route>
 
                 {/* Fallback 404 Route */}
-                <Route
-                  path="*"
-                  element={
-                    <div className="flex h-full min-h-[400px] items-center justify-center p-6 text-center">
-                      <div className="space-y-2">
-                        <h1 className="text-3xl font-extrabold tracking-tight">404 - Page Not Found</h1>
-                        <p className="text-sm text-muted-foreground">The page you are looking for does not exist.</p>
-                      </div>
-                    </div>
-                  }
-                />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </main>
           </div>

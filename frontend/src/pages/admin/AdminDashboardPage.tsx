@@ -18,8 +18,10 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { RestockDialog } from "@/components/admin/RestockDialog";
 import { VehicleFormModal } from "@/components/admin/VehicleFormModal";
 import { DeleteVehicleDialog } from "@/components/admin/DeleteVehicleDialog";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export const AdminDashboardPage: React.FC = () => {
+  useDocumentTitle("Dashboard");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta>({
     page: 1,

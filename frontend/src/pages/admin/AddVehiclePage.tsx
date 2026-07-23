@@ -7,8 +7,10 @@ import { createVehicle } from "@/api/vehicle.api";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { VehicleForm } from "@/components/admin/VehicleForm";
 import { Button } from "@/components/ui/button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export const AddVehiclePage: React.FC = () => {
+  useDocumentTitle("Add Vehicle");
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);

@@ -23,8 +23,10 @@ import { Button } from "@/components/ui/button";
 import { RestockDialog } from "@/components/admin/RestockDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { toast } from "sonner";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export const DashboardPage: React.FC = () => {
+  useDocumentTitle("Dashboard");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);

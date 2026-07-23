@@ -14,6 +14,7 @@ import {
 import type { Vehicle } from "@/types/vehicle";
 import { getVehicleById } from "@/api/vehicle.api";
 import { useAuth } from "@/hooks/useAuth";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { ErrorState } from "@/components/common/ErrorState";
@@ -28,6 +29,8 @@ export const VehicleDetailPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState<boolean>(false);
+
+  useDocumentTitle(vehicle ? `${vehicle.make} ${vehicle.model}` : "Vehicle Details");
 
   const fetchVehicleDetails = useCallback(async () => {
     if (!id) return;

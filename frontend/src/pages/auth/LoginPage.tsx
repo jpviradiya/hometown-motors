@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Loader2, LogIn, Mail, Lock, Eye, EyeOff, Car, ShieldCheck, CheckCircle2, UserPlus, Sparkles } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,7 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export const LoginPage: React.FC = () => {
+  useDocumentTitle("Login");
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

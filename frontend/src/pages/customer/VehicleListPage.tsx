@@ -8,6 +8,7 @@ import { Pagination } from "@/components/vehicles/Pagination";
 import { VehicleCardSkeleton } from "@/components/common/Skeleton";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const DEFAULT_FILTERS: VehicleFilterOptions = {
   search: "",
@@ -22,6 +23,7 @@ const DEFAULT_FILTERS: VehicleFilterOptions = {
 };
 
 export const VehicleListPage: React.FC = () => {
+  useDocumentTitle("Browse Vehicles");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta>({
     page: 1,

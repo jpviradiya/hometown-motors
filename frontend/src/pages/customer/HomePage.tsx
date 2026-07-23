@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ShieldCheck, Car, Sparkles, Award } from "lucide-react";
 import type { Vehicle } from "@/types/vehicle";
 import { getVehicles } from "@/api/vehicle.api";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Button } from "@/components/ui/button";
 import { VehicleCard } from "@/components/vehicles/VehicleCard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 export const HomePage: React.FC = () => {
+  useDocumentTitle("Home");
   const [featuredVehicles, setFeaturedVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
 

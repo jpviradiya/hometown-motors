@@ -9,6 +9,7 @@ import { VehicleForm } from "@/components/admin/VehicleForm";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export const EditVehiclePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,8 @@ export const EditVehiclePage: React.FC = () => {
   const [fetchError, setFetchError] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useDocumentTitle(vehicle ? `Edit ${vehicle.make} ${vehicle.model}` : "Edit Vehicle");
 
   const fetchVehicle = useCallback(async () => {
     if (!id) return;

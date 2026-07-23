@@ -13,8 +13,10 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
 import { RestockDialog } from "@/components/admin/RestockDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export const VehicleManagementPage: React.FC = () => {
+  useDocumentTitle("Vehicle Management");
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta>({
